@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --error--color: #ff4d4f;
+  --border-color: #1677ff;
+  --border--error--color: #ff4d4f;
+}
+
