@@ -18,10 +18,10 @@ export class Owner {
   @Column()
   name: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({  nullable: false })
   phone: string;
 
-  @Column({ unique: true })
+  @Column({ })
   email: string;
 
   @Column()

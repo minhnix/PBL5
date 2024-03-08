@@ -1,5 +1,6 @@
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -10,6 +11,9 @@ import { History } from "./History";
 
 @Entity()
 export class Vehicle {
+  constructor(partial?: Partial<Vehicle>) {
+    Object.assign(this, partial);
+  }
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -21,4 +25,7 @@ export class Vehicle {
 
   @OneToMany(() => History, (history) => history.vehicle)
   history: Promise<History[]>;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

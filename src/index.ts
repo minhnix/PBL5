@@ -4,6 +4,7 @@ import * as dotenv from "dotenv";
 import { Request, Response } from "express";
 import ownerRoutes from "./route/ownerRoutes";
 import userRoutes from "./route/userRoutes";
+import vehicleRoutes from "./route/vehicleRoutes";
 import "reflect-metadata";
 import { AppError } from "./utils/appError";
 dotenv.config();
@@ -15,6 +16,7 @@ const { PORT = 3000 } = process.env;
 
 app.use("/api/owners", ownerRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 
 app.get("*", (req: Request, res: Response) => {
   res.status(505).json({ message: "Bad Request" });
