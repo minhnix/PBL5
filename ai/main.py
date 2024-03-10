@@ -7,9 +7,9 @@ import numpy as np
 
 if __name__ == "__main__":
     ALLOWED_LIST = "ABCDEFGHKLMNPSTUVXYZ0123456789-."
-    reader = easyocr.Reader(['en'], gpu=True)
-    model = YOLO('best.pt')
-    imageP = "image.jpg" # image path or url to image
+    reader = easyocr.Reader(['en'])
+    model = YOLO('.\model\detect_license_plate\\best.pt')
+    imageP = "xe-sang-che-bien-1640163258103.jpg" # image path or url to image
     results = model(imageP)
     image = Image.open(imageP)
     for result in results:
