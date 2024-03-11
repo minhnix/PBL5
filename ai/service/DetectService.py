@@ -22,12 +22,13 @@ class DetectService:
         data = []
         for result in results:
             for box in result.boxes:
-                coords = get_bounding_box(box)
-                image = crop_image(original_image, coords)
+                coordinates = get_bounding_box(box)
+                image = crop_image(original_image, coordinates)
                 text = self.reader.readtext(ImageService.to_gray_image(image), allowlist=ALLOWED_LIST)
                 extracted_text = [detection[1] for detection in text]
                 obj = {
-                    'number_license_plate': extracted_text
+                    'number_license_plate': extracted_text,
+                    'coordinates': coordinates
                 }
                 data.append(obj)
 

@@ -1,12 +1,15 @@
 from flask import Flask, request, Response, json, send_file
+from flask_cors import CORS
 from PIL import Image
 from io import BytesIO
 import os
 
 from service.DetectService import DetectService
+from service.ImageService import ImageService
 detect_model = DetectService()
 
 app = Flask(__name__)
+CORS(app)
 
 def get_image_from_request():
     if "file" not in request.files:
@@ -28,8 +31,9 @@ def detect_():
         response = []
 
         for image in images:
-            image = Image.open(BytesIO(image.read()))
-            result = detect_model(image)
+            image1 = Image.open(BytesIO(image.read()))
+            result = detect_model(image1)
+            draw_image = ImageService.label(image, result)
             response.append(result)
 
         return Response(json.dumps(response), status=200, mimetype='application/json')
