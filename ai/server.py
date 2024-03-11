@@ -3,8 +3,8 @@ from PIL import Image
 from io import BytesIO
 import os
 
-from service.detect import Detect
-model = Detect()
+from service.DetectService import DetectService
+detect_model = DetectService()
 
 app = Flask(__name__)
 
@@ -21,17 +21,18 @@ def get_image_from_request():
 @app.route("/detect", methods=["POST"])
 def detect_():
     try:
-        if 'file' not in request.files:
+        if 'images' not in request.files:
             return 'No file provided', 400
 
-        file = request.files['file']
-        if file.filename == '':
-            return 'No selected file', 400
-        file_path = 'images/' + file.filename
-        file.save(file_path)
+        images = request.files.getlist('images')
+        response = []
 
-        result = model(file_path)
-        return Response(json.dumps(result), status=200, mimetype='application/json')
+        for image in images:
+            image = Image.open(BytesIO(image.read()))
+            result = detect_model(image)
+            response.append(result)
+
+        return Response(json.dumps(response), status=200, mimetype='application/json')
     except Exception as e:
         return Response(
             json.dumps(str(e)),
