@@ -18,12 +18,12 @@ if __name__ == "__main__":
     new_frame_time = 0
 
 
-    model = torch.hub.load(".", "custom", path="model/LP_detector_nano_61.pt",force_reload=True, source="local")
-    yolo_license_plate = torch.hub.load('.', 'custom', path='model/LP_ocr_nano_62.pt', force_reload=True, source='local')
+    model = torch.hub.load("ultralytics/yolov5", "custom", path="model/LP_detector_nano_61.pt",force_reload=True)
+    yolo_license_plate = torch.hub.load('ultralytics/yolov5', 'custom', path='model/LP_ocr_nano_62.pt', force_reload=True)
 
 
     while True:
-      img = input(r"Nhập: ")
+      img = input(r"Nhập đường dẫn tới ảnh: ")
       original_image = cv2.imread(img)
       plates = model(original_image, size=640)
 
