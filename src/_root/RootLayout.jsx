@@ -2,12 +2,14 @@
 import { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { Bottombar, LeftSidebar, Topbar } from "../components";
+import { useCheckLogin } from "../utils/checkLogin";
 
 const RootLayout = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+   const [isLogin, user] = useCheckLogin();
+
   return (
     <>
-      {isAuthenticated ? (
+      {isLogin ? (
         <>
           <div className="w-full flex flex-row">
             <LeftSidebar />

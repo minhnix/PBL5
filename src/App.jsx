@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { AuthLayout, SignInForm } from "./_auth";
-import { Home, RootLayout } from "./_root";
+import { Home, RootLayout, User, Vehicle, History } from "./_root";
+import { HistoryDetail, ViewHistory } from "./_root/pages";
 
 const App = () => {
   return (
@@ -14,6 +15,11 @@ const App = () => {
           {/* private routes */}
           <Route element={<RootLayout />}>
             <Route index path="/" element={<Home />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/vehicle" element={<Vehicle />} />
+            <Route path="/history/:id" element={<HistoryDetail />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/view-history/:id" element={<ViewHistory />} />
           </Route>
         </Routes>
       </main>

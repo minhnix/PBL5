@@ -1,6 +1,15 @@
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logOut } from "../../redux/authSlice";
 
 const LeftSidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  function handleLogOut() {
+    dispatch(logOut());
+    navigate("/sign-in");
+  }
   return (
     <aside className="max-w-[200px] min-w-[200px] w-[200px] flex flex-col">
       <div className="px-5 py-4">
@@ -15,13 +24,41 @@ const LeftSidebar = () => {
         </Link>
       </div>
       <section className="pt-2 flex flex-col">
-        <div className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded hover:bg-[#f0f0f0]">
+        <Link
+          to={"/"}
+          className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded hover:bg-[#f0f0f0]"
+        >
           <i className="bx bx-bar-chart"></i>
           <span className="ml-2 text-[14px]">Dashborad</span>
-        </div>
-        <div className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer bg-[#e6f4ff] rounded text-primary-color">
-          <i className="bx bx-bar-chart"></i>
-          <span className="ml-2 text-[14px]">Dashborad</span>
+        </Link>
+        <Link
+          to={"/user"}
+          className=" m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer bg-[#e6f4ff] rounded text-primary-color"
+        >
+          <i className="bx bx-user"></i>
+          <span className="ml-2 text-[14px]">User</span>
+        </Link>
+        <Link
+          to={"/vehicle"}
+          className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded hover:bg-[#f0f0f0]"
+        >
+          <i className="bx bx-car"></i>
+          <span className="ml-2 text-[14px]">Vehicle</span>
+        </Link>
+        <Link
+          to={"/history"}
+          className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded hover:bg-[#f0f0f0]"
+        >
+          <i className="bx bx-history"></i>
+          <span className="ml-2 text-[14px]">History</span>
+        </Link>
+
+        <div
+          onClick={handleLogOut}
+          className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer  rounded hover:bg-[#f0f0f0]"
+        >
+          <i className="bx bx-log-out"></i>
+          <span className="ml-2 text-[14px]">Đăng xuất</span>
         </div>
       </section>
     </aside>

@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useCheckLogin } from "../utils/checkLogin";
 
 const AuthLayout = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLogin, user] = useCheckLogin();
+
   return (
     <>
-      {isAuthenticated ? (
+      {isLogin ? (
         <Navigate to="/" />
       ) : (
         <>

@@ -1,3 +1,3 @@
 import RootLayout from "./RootLayout";
-import { Home } from "./pages";
-export { RootLayout, Home };
+import { Home, User, Vehicle, History } from "./pages";
+export { RootLayout, Home, User, Vehicle, History };
