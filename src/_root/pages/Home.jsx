@@ -55,7 +55,7 @@ const Home = () => {
       </div>
       <div className="mt-8 flex  flex-row">
         <RecentInOut />
-        <LiveCamera/>
+        <LiveCamera />
       </div>
     </>
   );

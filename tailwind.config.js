@@ -5,6 +5,7 @@ export default {
     extend: {
       colors: {
         "error-color": "var(--error--color)",
+        "success-color": "#12d742",
         "border-color": "var(--border--color)",
         "border-error-color": "var(--border--error--color)",
         "primary-color": "#1677ff",

@@ -34,7 +34,9 @@ const ViewHistory = () => {
               <span>Image</span>
             </div>
           </div>
-          <div className="flex-1 bg-red-400 border rounded-bl rounded-br"></div>
+          <div className="flex-1 bg-red-400 border rounded-bl rounded-br">
+            <img src="" alt="" />
+          </div>
         </div>
       </div>
     </>

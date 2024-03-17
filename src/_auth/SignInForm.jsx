@@ -75,9 +75,13 @@ const SignInForm = () => {
   return (
     <>
       <section className="max-w-[91.66%] w-full">
-        <div className="py-4 flex flex-col items-center justify-center">
-          <div className="mb-[32px] text-black text-xl font-bold ">
-            Gara auto
+        <form className="py-4 flex flex-col items-center justify-center">
+          <div className="mb-[32px] text-black text-xl font-bold flex items-center gap-2">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1571/1571991.png"
+              alt=""className=" w-7 h-7"
+            />
+            <span>Auto Gara</span>
           </div>
 
           <div className="bg-[white] w-full max-w-[400px] p-8 rounded-md">
@@ -153,7 +157,7 @@ const SignInForm = () => {
               </button>
             </div>
           </div>
-        </div>
+        </form>
       </section>
     </>
   );

@@ -5,7 +5,7 @@ import { Bottombar, LeftSidebar, Topbar } from "../components";
 import { useCheckLogin } from "../utils/checkLogin";
 
 const RootLayout = () => {
-   const [isLogin, user] = useCheckLogin();
+  const [isLogin, user] = useCheckLogin();
 
   return (
     <>
@@ -13,7 +13,7 @@ const RootLayout = () => {
         <>
           <div className="w-full flex flex-row">
             <LeftSidebar />
-            <section className="h-full flex-1">
+            <section className="h-full flex-1 ">
               <Topbar />
               <div className="px-6 pb-6 pt-[88px] h-full bg-[#f0f0f0] -translate-y-16">
                 <Outlet />
