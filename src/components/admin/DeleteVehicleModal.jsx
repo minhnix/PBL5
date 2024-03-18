@@ -2,23 +2,27 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Loading from "../shared/Loading";
 
-const DeleteOwnerModal = ({ setModal, type, ownerId }) => {
-  let [owner, setOwner] = useState({});
+const DeleteVehicleModal = ({ setModal, type, vehicleId }) => {
+  let [vehicle, setVehicle] = useState({});
   let [loading, setLoading] = useState(false);
   useEffect(() => {
     axios
-      .get(`http://localhost:3000/api/owners/${ownerId}`)
+      .get(`http://localhost:3000/api/vehicles/${vehicleId}`)
       .then((response) => {
-        setOwner(response.data.data.owner[0]);
+        console.log(response);
+        setVehicle(response.data.data.vehicle[0]);
       });
-  }, [ownerId]);
+  }, [vehicleId]);
   function handleDelete() {
     setLoading(true);
-    axios.delete(`http://localhost:3000/api/owners/${ownerId}`);
-    setTimeout(() => {
-      setLoading(false);
-      setModal(false);
-    }, 1000);
+    axios.delete(`http://localhost:3000/api/vehicles/${vehicleId}`).then((res) => {
+        console.log(res)
+      setLoading(true);
+
+      setTimeout(() => {
+        setModal(false);
+      }, 500);
+    });
   }
   return (
     <div
@@ -35,7 +39,7 @@ const DeleteOwnerModal = ({ setModal, type, ownerId }) => {
       >
         <div className="flex justify-between items-start ">
           <span className="text-black text-base font-semibold ">
-            {type} owner
+            {type} vehicle
           </span>
           <div
             onClick={() => {
@@ -57,9 +61,9 @@ const DeleteOwnerModal = ({ setModal, type, ownerId }) => {
           <div className="flex flex-col min-h-[120px] mt-6">
             <span className="text-[24px] mb-4">Are you sure?</span>
             <span className=" text-sm text-[#5f5d5d]">
-              Do you really want to delete owner{" "}
-              <span className="font-bold">{owner?.name}</span>? This process
-              cannot be undone.
+              Do you really want to delete vehicle{" "}
+              <span className="font-bold">{vehicle?.numberPlate}</span>? This
+              process cannot be undone.
             </span>
           </div>
         )}
@@ -90,4 +94,4 @@ const DeleteOwnerModal = ({ setModal, type, ownerId }) => {
   );
 };
 
-export default DeleteOwnerModal;
+export default DeleteVehicleModal;

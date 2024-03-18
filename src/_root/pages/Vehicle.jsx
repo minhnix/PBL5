@@ -1,23 +1,28 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { VehicleModal } from "../../components";
+import { DeleteVehicleModal, VehicleModal } from "../../components";
+import ReactPaginate from "react-paginate";
 
 const Vehicle = () => {
   let [vehicles, setVehicles] = useState([]);
   let [start, setStart] = useState(0);
   let [totalVehicles, setTotalVehicles] = useState(0);
+  let [page, setPage] = useState(0);
 
   let [type, setType] = useState();
   let [vehicleId, setVehicleId] = useState("");
   let [modal, setModal] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/api/vehicles?limit=7").then((response) => {
-      setVehicles(response.data.data.vehicles);
-      setTotalVehicles(response.data.total);
-      setStart(response.data.start);
-    });
-  }, []);
+    axios
+      .get(`http://localhost:3000/api/vehicles?limit=7&page=${page + 1}`)
+      .then((response) => {
+        setVehicles(response.data.data.vehicles);
+        setTotalVehicles(response.data.total);
+        console.log(response.data.total);
+        setStart(response.data.start);  
+      });
+  }, [modal, page]);
 
   function handleCreateModal() {
     setVehicleId("");
@@ -33,6 +38,11 @@ const Vehicle = () => {
     setVehicleId(id);
     setModal(true);
     setType("Update");
+  }
+  function handleDeleteModal(id) {
+    setVehicleId(id);
+    setModal(true);
+    setType("Delete");
   }
   return (
     <>
@@ -51,7 +61,7 @@ const Vehicle = () => {
           </button>
         </div>
       </div>
-      <div>
+      <div className="min-h-[450px]">
         <table className="w-full">
           <thead>
             <tr>
@@ -107,7 +117,12 @@ const Vehicle = () => {
                         >
                           <i className="bx bx-edit-alt hover:text-primary-color"></i>
                         </div>
-                        <div className="rounded p-1 border border-[#ff4d4f] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75">
+                        <div
+                          onClick={() => {
+                            handleDeleteModal(vehicle.id);
+                          }}
+                          className="rounded p-1 border border-[#ff4d4f] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
+                        >
                           <i className="bx bx-trash-alt text-[#ff4d4f]"></i>
                         </div>
                       </div>
@@ -119,8 +134,35 @@ const Vehicle = () => {
           </tbody>
         </table>
       </div>
-      {modal && (
+      <div className="mt-2 flex items-center justify-center">
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={(it) => {
+            setPage(it.selected);
+          }}
+          pageRangeDisplayed={2}
+          pageCount={Math.ceil(totalVehicles / 7)}
+          previousLabel="< previous"
+          renderOnZeroPageCount={null}
+          className="flex gap-2 items-center justify-center"
+          pageClassName="border border-[#b5b5b5] min-w-[34px] min-h-[34px] rounded flex items-center justify-center"
+          activeClassName="bg-primary-color text-white"
+          previousClassName="border border-[#b5b5b5] px-2 py-1 rounded"
+          nextClassName="border border-[#b5b5b5] px-2 py-1 rounded"
+          pageLinkClassName="w-full h-full  px-2 py-1 text-center"
+          initialPage={page}
+        />
+      </div>
+      {modal && type != "Delete" && (
         <VehicleModal setModal={setModal} type={type} vehicleId={vehicleId} />
+      )}
+      {modal && type == "Delete" && (
+        <DeleteVehicleModal
+          setModal={setModal}
+          type={type}
+          vehicleId={vehicleId}
+        />
       )}
     </>
   );

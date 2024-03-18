@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DeleteOwnerModal, OwnerModal } from "../../components";
 import axios from "axios";
+import ReactPaginate from "react-paginate";
 
 const Owner = () => {
   let [modal, setModal] = useState(false);
@@ -8,14 +9,18 @@ const Owner = () => {
   let [start, setStart] = useState(0);
   let [type, setType] = useState();
   let [ownerId, setOwnerId] = useState("");
+  let [page, setPage] = useState(0);
   let [totalOwners, setTotalOwners] = useState(0);
   useEffect(() => {
-    axios.get("http://localhost:3000/api/owners?limit=7").then((response) => {
-      setOwners(response.data.data.owners);
-      setTotalOwners(response.data.total);
-      setStart(response.data.start);
-    });
-  }, [modal]);
+    console.log(page);
+    axios
+      .get(`http://localhost:3000/api/owners?limit=7&page=${page + 1}`)
+      .then((response) => {
+        setOwners(response.data.data.owners);
+        setTotalOwners(response.data.total);
+        setStart(response.data.start);
+      });
+  }, [modal, page]);
 
   function handleViewModal(id) {
     setOwnerId(id);
@@ -56,7 +61,7 @@ const Owner = () => {
           </button>
         </div>
       </div>
-      <div>
+      <div className="min-h-[450px]">
         <table className="w-full">
           <thead>
             <tr>
@@ -128,6 +133,26 @@ const Owner = () => {
             })}
           </tbody>
         </table>
+      </div>
+      <div className="mt-2 flex items-center justify-center">
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={(it) => {
+            setPage(it.selected);
+          }}
+          pageRangeDisplayed={3}
+          pageCount={Math.ceil(totalOwners / 7)}
+          previousLabel="< previous"
+          renderOnZeroPageCount={null}
+          className="flex gap-2 items-center justify-center"
+          pageClassName="border border-[#b5b5b5] min-w-[34px] min-h-[34px] rounded flex items-center justify-center"
+          activeClassName="bg-primary-color text-white"
+          previousClassName="border border-[#b5b5b5] px-2 py-1 rounded"
+          nextClassName="border border-[#b5b5b5] px-2 py-1 rounded"
+          pageLinkClassName="w-full h-full  px-2 py-1 text-center"
+          initialPage={page}
+        />
       </div>
       {modal && type != "Delete" && (
         <OwnerModal setModal={setModal} type={type} ownerId={ownerId} />

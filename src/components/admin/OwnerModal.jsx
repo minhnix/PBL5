@@ -82,9 +82,7 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
       className="fixed bg-[rgba(0,0,0,0.05)]  top-0 left-0 right-0 bottom-0  z-50 flex items-center justify-center"
     >
       <form
-        onClick={(e) => {
-          e.preventDefault();
-        }}
+        onSubmit={handleSubmit}
         className="w-[400px] px-6 py-5 flex flex-col  rounded border bg-white "
       >
         <div className="flex justify-between items-start ">

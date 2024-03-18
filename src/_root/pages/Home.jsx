@@ -11,7 +11,7 @@ const Home = () => {
             >
               <i className={`bx bx-history text-[#1d7bff]`}></i>
             </div>
-            <span>Number of user </span>
+            <span>Number of owner </span>
           </div>
           <div className="flex flex-row">
             <div className="flex-1 flex items-center justify-center">
@@ -27,7 +27,7 @@ const Home = () => {
             >
               <i className={`bx bx-history text-[#52c41a]`}></i>
             </div>
-            <span>Number of </span>
+            <span>Number of vehicle in gara </span>
           </div>
           <div className="flex flex-row">
             <div className="flex-1 flex items-center justify-center">
