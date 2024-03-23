@@ -29,7 +29,11 @@ let ownerController = {
     });
   }),
   deleteOwner: catchError(async (req: Request, res: Response) => {
-    await AppDataSource.getRepository(Owner).softDelete(req.params.id);
+    let owner = await AppDataSource.getRepository(Owner).findOne({
+      where: { id: req.params.id },
+      relations: ["vehicles"],
+    });
+    await AppDataSource.getRepository(Owner).softRemove(owner);
     res.status(200).json({
       status: "success",
     });
@@ -38,15 +42,21 @@ let ownerController = {
     let limit = +req.query.limit || 15;
     let page = +req.query.page || 1;
     let offset = (page - 1) * limit;
-    let owners = await AppDataSource.getRepository(Owner)
+    let ownersPromise = AppDataSource.getRepository(Owner)
       .createQueryBuilder("e")
       .loadRelationCountAndMap("e.vehiclesCount", "e.vehicles")
+      .orderBy("e.createdAt", "DESC")
       .offset(offset)
       .limit(limit)
       .getMany();
-
+    let totalPromise = AppDataSource.getRepository(Owner)
+      .createQueryBuilder("e")
+      .getCount();
+    let [owners, total] = await Promise.all([ownersPromise, totalPromise]);
     return res.status(200).json({
       status: "success",
+      total: total,
+      start: offset,
       results: owners.length,
       data: {
         owners,
@@ -67,9 +77,16 @@ let ownerController = {
       },
     });
   }),
-  addVehicle: catchError(async (req: Request, res: Response, next) => {
-    
+  getAllOwners: catchError(async (req: Request, res: Response, next) => {
+    let owners = await AppDataSource.getRepository(Owner).find({});
+    return res.status(200).json({
+      status: "success",
+      data: {
+        owners,
+      },
+    });
   }),
+  addVehicle: catchError(async (req: Request, res: Response, next) => {}),
 };
 
 export default ownerController;

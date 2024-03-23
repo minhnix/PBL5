@@ -55,14 +55,27 @@ let vehicleController = {
     let limit = +req.query.limit || 15;
     let page = +req.query.page || 1;
     let offset = (page - 1) * limit;
-    let vehicles = await AppDataSource.getRepository(Vehicle)
-      .createQueryBuilder("e")
-      .offset(offset)
-      .limit(limit)
-      .getMany();
+    let vehiclesPromise = AppDataSource.getRepository(Vehicle).find({
+      relations: ["owner"],
+      skip: offset,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+    });
+    // let vehiclesPromise = AppDataSource.getRepository(Vehicle)
+    //   .createQueryBuilder("e")
+    //   .leftJoinAndSelect("e.owner", "owner")
+    //   .offset(offset)
+    //   .limit(limit)
+    //   .getMany();
+    let totalPromise = AppDataSource.getRepository(Vehicle).count({});
 
+    let [vehicles, total] = await Promise.all([vehiclesPromise, totalPromise]);
     return res.status(200).json({
       status: "success",
+      total: total,
+      start: offset,
       results: vehicles.length,
       data: {
         vehicles,
@@ -73,6 +86,7 @@ let vehicleController = {
     let vehicle = await AppDataSource.getRepository(Vehicle).find({
       where: { id: req.params.id },
       relations: ["owner"],
+      withDeleted: true,
     });
     res.status(200).json({
       status: "success",

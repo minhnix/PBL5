@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   OneToMany,
@@ -18,10 +19,10 @@ export class Owner {
   @Column()
   name: string;
 
-  @Column({  nullable: false })
+  @Column({ nullable: false })
   phone: string;
 
-  @Column({ })
+  @Column({})
   email: string;
 
   @Column()
@@ -30,9 +31,13 @@ export class Owner {
   @OneToMany(() => Vehicle, (vehicle) => vehicle.owner, {
     cascade: true,
     nullable: true,
+    onDelete: "CASCADE",
   })
   vehicles: Promise<Owner[]>;
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  createdAt: Date;
 }

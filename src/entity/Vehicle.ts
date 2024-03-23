@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   ManyToOne,
@@ -7,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Owner } from "./Owner";
-import { History } from "./History";
+import { History, HistoryType } from "./History";
 
 @Entity()
 export class Vehicle {
@@ -20,6 +21,9 @@ export class Vehicle {
   @Column()
   numberPlate: string;
 
+  @Column()
+  status: HistoryType;
+
   @ManyToOne(() => Owner, (owner) => owner.vehicles)
   owner: Promise<Owner[]>;
 
@@ -28,4 +32,7 @@ export class Vehicle {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  createdAt: Date;
 }
