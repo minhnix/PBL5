@@ -3,6 +3,7 @@ import { catchError } from "../utils/catchError";
 import { AppDataSource } from "../data-source";
 import { Owner, Vehicle } from "../entity";
 import { AppError } from "../utils/appError";
+import { HistoryType } from "../entity/History";
 
 let vehicleController = {
   createVehicle: catchError(async (req: Request, res: Response, next) => {
@@ -13,7 +14,11 @@ let vehicleController = {
     if (!owner) return new AppError("Cannot find owner by that id", 400);
     req.body.idOwner = undefined;
     let vehicle = await vehicleRepository.save(
-      new Vehicle({ ...req.body, owner: Promise.resolve(owner) })
+      new Vehicle({
+        ...req.body,
+        owner: Promise.resolve(owner),
+        status: req.body.status == "in" ? HistoryType.IN : HistoryType.OUT,
+      })
     );
     return res.status(200).json({
       status: "success",
@@ -25,6 +30,7 @@ let vehicleController = {
   updateVehicle: catchError(async (req: Request, res: Response, next) => {
     let vehicleRepository = AppDataSource.getRepository(Vehicle);
     let id = req.params.id;
+
     let vehicle = await vehicleRepository.findOneBy({ id });
     if (req.body.idOwner) {
       let owner = await AppDataSource.getRepository(Owner).findOneBy({
@@ -34,9 +40,16 @@ let vehicleController = {
       req.body.owner = owner;
     }
 
-    let updateVehicle = await vehicleRepository.save(
-      new Vehicle({ ...vehicle, ...req.body })
-    );
+    let newVehicle = new Vehicle(new Vehicle({ ...vehicle, ...req.body }));
+    // if (req.body.status) {
+    //   req.body.status == "in"
+    //     ? (vehicle.status = HistoryType.IN)
+    //     : (vehicle.status = HistoryType.OUT);
+    //   console.log(vehicle);
+    //   req.body.status = undefined;
+    // }
+    let updateVehicle = await vehicleRepository.save(newVehicle);
+    console.log(updateVehicle);
     return res.status(200).json({
       status: "success",
       data: {
@@ -93,6 +106,23 @@ let vehicleController = {
       data: {
         vehicle,
       },
+    });
+  }),
+  getVehicleStatus: catchError(async (req: Request, res: Response, next) => {
+    let totalVehiclePromise = AppDataSource.getRepository(Vehicle)
+      .createQueryBuilder("e")
+      .getCount();
+    let totalVehicleInPromise = AppDataSource.getRepository(Vehicle)
+      .createQueryBuilder("e")
+      .where("e.status = :status", { status: "in" })
+      .getCount();
+    let [totalVehicle, totalVehicleIn] = await Promise.all([
+      totalVehiclePromise,
+      totalVehicleInPromise,
+    ]);
+    return res.status(200).json({
+      total: totalVehicle,
+      in: totalVehicleIn,
     });
   }),
 };

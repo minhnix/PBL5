@@ -86,6 +86,14 @@ let ownerController = {
       },
     });
   }),
+  getTotal: catchError(async (req: Request, res: Response, next) => {
+    let total = await AppDataSource.getRepository(Owner)
+      .createQueryBuilder("e")
+      .getCount();
+    return res.status(200).json({
+      total: total,
+    });
+  }),
   addVehicle: catchError(async (req: Request, res: Response, next) => {}),
 };
 
