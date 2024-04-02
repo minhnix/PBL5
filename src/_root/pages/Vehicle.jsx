@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { DeleteVehicleModal, VehicleModal } from "../../components";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
 
 const Vehicle = () => {
   let [vehicles, setVehicles] = useState([]);
@@ -20,7 +21,7 @@ const Vehicle = () => {
         setVehicles(response.data.data.vehicles);
         setTotalVehicles(response.data.total);
         console.log(response.data.total);
-        setStart(response.data.start);  
+        setStart(response.data.start);
       });
   }, [modal, page]);
 
@@ -95,12 +96,13 @@ const Vehicle = () => {
                     </td>
                     <td className="text-left p-4 border-b text-sm">
                       <div className="w-full h-full flex items-center ">
-                        <div
+                        <Link
+                          to={`/history/${vehicle.id}`}
                           onClick={() => {}}
                           className="rounded p-1 border border-[#fab574] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
                         >
                           <i className="bx bx-history text-[#ffa149]"></i>
-                        </div>
+                        </Link>
                         <div
                           onClick={() => {
                             handleViewModal(vehicle.id);

@@ -1,4 +1,25 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 const ViewHistory = () => {
+  const { id } = useParams();
+  let [history, setHistory] = useState({});
+  useEffect(() => {
+    axios.get(`http://localhost:3000/api/history/${id}`).then((response) => {
+      setHistory(response.data.data.history[0]);
+    });
+  }, []);
+
+  function handleDate(dateTimeString) {
+    const dateTime = new Date(dateTimeString);
+    const options = { year: "numeric", month: "short", day: "2-digit" };
+    const formattedDateTime = dateTime.toLocaleDateString("en-US", options);
+
+    const optionsHour = { hour: "2-digit", minute: "2-digit" };
+    const formatHour = dateTime.toLocaleTimeString("en-US", optionsHour);
+    return formatHour + " " + formattedDateTime;
+  }
   return (
     <>
       <div className="mt-8 flex  flex-row">
@@ -13,15 +34,30 @@ const ViewHistory = () => {
           </div>
 
           <div className="flex gap-5 flex-row bg-white px-4 py-3 border-l border-r border-b rounded-bl rounded-br">
-            <div className=" flex items-center justify-center text-[#52C41A]">
+            <div
+              className={`flex items-center justify-center ${
+                history.type == "in" ? "text-[#52C41A]" : "text-[#F5222D]"
+              }`}
+            >
               <span>●</span>
             </div>
             <div>
-              <div className="text-[14px] font-semibold mt-1">74L1-01589</div>
-              <div className="text-xs">Owner: Nguyen Quoc Dat</div>
-              <div className="text-xs">Phone: 0369394745</div>
-              <div className="text-xs">Address: TQK DN</div>
-              <div className="text-xs">Time: 14:04</div>
+              <div className="text-[14px] font-semibold mt-1">
+                {history.__vehicle__?.numberPlate} {history.type}
+              </div>
+              <div className="text-xs">
+                Owner: {history.__vehicle__?.__owner__?.name}
+              </div>
+              <div className="text-xs">
+                Phone: {history.__vehicle__?.__owner__?.phone}
+              </div>
+              <div className="text-xs">
+                Address: {history.__vehicle__?.__owner__?.address}
+              </div>
+              <div className="text-xs">
+                Email: {history.__vehicle__?.__owner__?.email}
+              </div>
+              <div className="text-xs">{handleDate(history.createdAt)}</div>
             </div>
           </div>
         </div>
@@ -34,8 +70,12 @@ const ViewHistory = () => {
               <span>Image</span>
             </div>
           </div>
-          <div className="flex-1 bg-red-400 border rounded-bl rounded-br">
-            <img src="" alt="" />
+          <div className="flex flex-1 border rounded-bl rounded-br ">
+            <img
+              src={history.url_image}
+              className="w-full max-h-[460px]"
+              alt=""
+            />
           </div>
         </div>
       </div>

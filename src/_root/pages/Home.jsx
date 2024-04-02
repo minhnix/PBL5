@@ -1,6 +1,34 @@
+import { useEffect, useState } from "react";
 import { LiveCamera, RecentInOut } from "../../components";
+import axios from "axios";
 
 const Home = () => {
+  let [totalOwner, setTotalOwner] = useState(0);
+  let [totalVehicle, setTotalVehicle] = useState(0);
+  let [totalVehicleIn, setTotalVehicleIn] = useState(0);
+  useEffect(() => {
+    axios.get(`http://localhost:3000/api/owners/total`).then((response) => {
+      setTotalOwner(response.data.total);
+    });
+    axios.get(`http://localhost:3000/api/vehicles/status`).then((response) => {
+      setTotalVehicle(response.data.total);
+      setTotalVehicleIn(response.data.in);
+    });
+    let fetchData = setInterval(() => {
+      axios.get(`http://localhost:3000/api/owners/total`).then((response) => {
+        setTotalOwner(response.data.total);
+      });
+      axios
+        .get(`http://localhost:3000/api/vehicles/status`)
+        .then((response) => {
+          setTotalVehicle(response.data.total);
+          setTotalVehicleIn(response.data.in);
+        });
+    }, 30000);
+    return () => {
+      clearInterval(fetchData);
+    };
+  }, []);
   return (
     <>
       <div className="flex gap-8">
@@ -15,7 +43,7 @@ const Home = () => {
           </div>
           <div className="flex flex-row">
             <div className="flex-1 flex items-center justify-center">
-              <strong className="text-4xl">36</strong>
+              <strong className="text-4xl">{totalOwner}</strong>
             </div>
             <div className="flex-1 invisible">.</div>
           </div>
@@ -31,7 +59,7 @@ const Home = () => {
           </div>
           <div className="flex flex-row">
             <div className="flex-1 flex items-center justify-center">
-              <strong className="text-4xl">36</strong>
+              <strong className="text-4xl">{totalVehicleIn}</strong>
             </div>
             <div className="flex-1 invisible">.</div>
           </div>
@@ -47,7 +75,7 @@ const Home = () => {
           </div>
           <div className="flex flex-row">
             <div className="flex-1 flex items-center justify-center">
-              <strong className="text-4xl">36</strong>
+              <strong className="text-4xl">{totalVehicle}</strong>
             </div>
             <div className="flex-1 invisible">.</div>
           </div>

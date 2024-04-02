@@ -18,6 +18,7 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
         .get(`http://localhost:3000/api/vehicles/${vehicleId}`)
         .then((response) => {
           setVehicle(response.data.data.vehicle[0]);
+          console.log(response);
           setOwnerId(response.data.data.vehicle[0].__owner__.id);
         });
   }, []);
@@ -31,6 +32,9 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
     setOwnerError("");
     setResponseMessage("");
     setOwnerId(e.target.value);
+  }
+  function handleChangeSelectStatus(e) {
+    setVehicle({ ...vehicle, [e.target.name]: e.target.value });
   }
   function handleValidate() {
     let res = true;
@@ -56,6 +60,7 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
         .post("http://localhost:3000/api/vehicles/", {
           idOwner: ownerId,
           numberPlate: vehicle.numberPlate,
+          status: vehicle.status || "in",
         })
         .then((response) => {
           setResponseMessage(response.data.status);
@@ -68,6 +73,7 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
         .patch(`http://localhost:3000/api/vehicles/${vehicle.id}`, {
           idOwner: ownerId,
           numberPlate: vehicle.numberPlate,
+          status: vehicle.status,
         })
         .then((response) => {
           setResponseMessage(response.data.status);
@@ -192,29 +198,56 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             {ownerError}.
           </span>
         </div>
-        {type == "View" && (
-          <div className="w-full flex flex-col">
-            <label
-              className="text-[14px] text-black pb-2 flex items-center"
-              htmlFor=""
-            >
-              <span className="text-[red] mr-1">*</span>
-              <span>Status</span>
-            </label>
+
+        <div className="w-full flex flex-col">
+          <label
+            className="text-[14px] text-black pb-2 flex items-center"
+            htmlFor=""
+          >
+            <span className="text-[red] mr-1">*</span>
+            <span>Status</span>
+          </label>
+          {type == "View" && (
             <input
               className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${"focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"}`}
               type="text"
               name="status"
-              readOnly={type == "View" ? true : false}
-              value={vehicle?.phone || ""}
+              readOnly={true}
+              value={vehicle?.status || ""}
               onChange={(e) => {
                 handleChange(e);
               }}
               placeholder="Status"
             />
-            <span className={`${"invisible"} text-sm text-error-color`}>.</span>
-          </div>
-        )}
+          )}
+          {type != "View" && (
+            <select
+              className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
+                ownerError
+                  ? "focus:border-border-error-color border-border-error-color"
+                  : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
+              }`}
+              name="status"
+              id="status"
+              disabled={type == "View" ? true : false}
+              onChange={handleChangeSelectStatus}
+            >
+              <option
+                selected={vehicle.status == "in" ? true : false}
+                value={"in"}
+              >
+                in
+              </option>
+              <option
+                selected={vehicle.status == "out" ? true : false}
+                value={"out"}
+              >
+                out
+              </option>
+            </select>
+          )}
+          <span className={`${"invisible"} text-sm text-error-color`}>.</span>
+        </div>
 
         <div className="mt-3 flex justify-end items-center gap-2">
           {type != "View" && (
