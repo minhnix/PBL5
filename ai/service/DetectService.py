@@ -2,7 +2,7 @@ from ultralytics import YOLO
 from PIL import Image
 import numpy as np
 
-from utils.index import get_bounding_box, crop_image, check_point_linear, linear_equation
+from utils.index import get_bounding_box, crop_image, check_point_linear, linear_equation, deskew
 from .ImageService import ImageService
 
 class DetectService:
@@ -15,13 +15,26 @@ class DetectService:
         return self.detect(original_image)
     
     def detect(self, original_image): 
-        results = self.model(original_image)
+        results = self.model(original_image, conf=0.5)
         data = []
         for result in results:
             for box in result.boxes:
-                coordinates = get_bounding_box(box)
-                image = crop_image(original_image, coordinates)
-                data.append(self.read_license_plate(image))
+                    coordinates = get_bounding_box(box)
+                    image = crop_image(original_image, coordinates)
+                    plate = None
+                    for cc in range(0,2):
+                        for ct in range(0,2):
+                            text = self.read_license_plate(deskew(image, cc, ct))
+                            if text != "unknown":
+                                plate = text
+                                break
+                        if plate != None:
+                            break
+                    obj = {
+                        'number_license_plate': plate,
+                        'coordinates': coordinates
+                    }
+                    data.append(obj)
 
         return data
 

@@ -33,7 +33,7 @@ def detect_():
         for image in images:
             image1 = Image.open(BytesIO(image.read()))
             result = detect_model(image1)
-            draw_image = ImageService.label(image, result)
+            draw_image = ImageService.label(image1, result, image.filename)
             response.append(result)
 
         return Response(json.dumps(response), status=200, mimetype='application/json')

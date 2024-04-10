@@ -16,34 +16,20 @@ class ImageService:
     return gray_image
 
   @staticmethod
-  def label(image_file, data): 
-    img = Image.open(image_file.stream).copy()
-
-    # Convert the image to RGBA mode for a wider color range
-    img = img.convert("RGBA")
-    draw = ImageDraw.Draw(img)
-    font = ImageFont.load_default(15)
-
+  def label(image, data, file_name): 
+    image_numpy = np.array(image)
     for obj in data:
         x1, y1, x2, y2 = obj['coordinates']
         label = obj["number_license_plate"]
 
-        draw.rectangle([x1, y1, x2, y2], outline='red', width=3)
-        # Vẽ chữ
-        draw.text((x1 + 2, y1 - 15 - 4), f"{label}", fill='red', font=font)
+        cv2.rectangle(image_numpy, (int(x1),int(y1)), (int(x2),int(y2)), color = (0,0,225), thickness = 2)
+        cv2.putText(image_numpy, label, (int(x1), int(y1-10)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
 
-    # Save the modified image as bytes and return
-    img = img.convert("RGB")  # Convert back to RGB mode before saving
-    img_bytes = io.BytesIO()
-    img.save(img_bytes, format='JPEG')
-    img_bytes.seek(0)
 
     # only in demo
     save_directory = "images/"
     os.makedirs(save_directory, exist_ok=True)
-    file_path = os.path.join(save_directory, image_file.filename)
-    with open(file_path, "wb") as f:
-        f.write(img_bytes.read())
+    file_path = os.path.join(save_directory, file_name)
+    cv2.imwrite(file_path, image_numpy)    
 
-    return img_bytes
-    
+    return image_numpy
