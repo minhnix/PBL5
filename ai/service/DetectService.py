@@ -20,7 +20,9 @@ class DetectService:
         for result in results:
             for box in result.boxes:
                     coordinates = get_bounding_box(box)
-                    image = crop_image(original_image, coordinates)
+                    # image = crop_image(original_image, coordinates)
+                    x_min, y_min, x_max, y_max = coordinates
+                    image = original_image[y_min:y_max, x_min:x_max]
                     plate = None
                     for cc in range(0,2):
                         for ct in range(0,2):
@@ -51,6 +53,7 @@ class DetectService:
     def read_license_plate(self, original_image): 
         results = self.reader_model(original_image)
         for result in results:
+            # print (result)
             return self.read_plate_from_result(result) # only 1 image in results
 
     def read_plate_from_result(self, result):

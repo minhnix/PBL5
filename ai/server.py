@@ -3,6 +3,8 @@ from flask_cors import CORS
 from PIL import Image
 from io import BytesIO
 import os
+import cv2
+import numpy as np
 
 from service.DetectService import DetectService
 from service.ImageService import ImageService
@@ -32,8 +34,10 @@ def detect_():
 
         for image in images:
             image1 = Image.open(BytesIO(image.read()))
-            result = detect_model(image1)
-            draw_image = ImageService.label(image1, result, image.filename)
+            pil_image = np.array(image1)
+            original_image = cv2.cvtColor(pil_image, cv2.COLOR_RGB2BGR)
+            result = detect_model(original_image)
+            draw_image = ImageService.label(original_image, result, image.filename)
             response.append(result)
 
         return Response(json.dumps(response), status=200, mimetype='application/json')
