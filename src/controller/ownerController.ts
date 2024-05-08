@@ -3,21 +3,29 @@ import { AppDataSource } from "../data-source";
 import { Owner } from "../entity/Owner";
 import { Request, Response } from "express";
 import { catchError } from "../utils/catchError";
+import { AppError } from "../utils/appError";
 
 let ownerController = {
   createOwner: catchError(async (req: Request, res: Response) => {
-    let { name, phone, email, address } = req.body;
+    let { name, phone, email, address, createdAt } = req.body;
     let user = await AppDataSource.getRepository(Owner).save(
-      new Owner({ name, phone, email, address })
+      new Owner({ name, phone, email, address, createdAt })
     );
     res.status(200).json({
       status: "success",
       data: { user },
     });
   }),
-  updateOwner: catchError(async (req: Request, res: Response) => {
+  updateOwner: catchError(async (req: Request, res: Response, next) => {
     let id = req.params.id;
     let owner = await AppDataSource.getRepository(Owner).findOneBy({ id });
+    if (!owner) {
+      return next(new AppError("Cannot find owner by that id", 400));
+      // res.status(400).json({
+      //   status: 400,
+      //   message: "Cannot find owner by that id",
+      // });
+    }
     let newOwner = await AppDataSource.getRepository(Owner).save(
       new Owner({ ...owner, ...req.body })
     );

@@ -33,6 +33,6 @@ export class Vehicle {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @CreateDateColumn()
   createdAt: Date;
 }

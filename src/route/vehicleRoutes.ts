@@ -1,9 +1,10 @@
 import * as express from "express";
 import { vehicleController } from "../controller/vehicleController";
+import { middleware } from "../controller/middlewareController";
 
 const router = express.Router();
 
-router.post("/", vehicleController.createVehicle);
+router.post("/", middleware.addCreateAt, vehicleController.createVehicle);
 router.delete("/:id", vehicleController.deleteVehicle);
 router.get("/", vehicleController.getAllVehicle);
 router.get("/status", vehicleController.getVehicleStatus);

@@ -17,16 +17,23 @@ const upload = multer({
 let historyController = {
   uploadImage: upload.single("file"),
   createHistory: catchError(async function (req, res: Response, next) {
-    if (!req.file) return new AppError("File can not be empty", 400);
+    if (!req.file) return next(new AppError("File can not be empty", 400));
     let { url, type } = await uploadPhotoCloudinary(req.file);
     console.log(url);
     let vehicle = await AppDataSource.getRepository(Vehicle).findOneBy({
       numberPlate: req.body.numberPlate,
     });
-    if (!vehicle)
-      return new AppError("Cannot find vehicle with number plate", 400);
+    if (!vehicle) {
+      // res.status(400).json({
+      //   status: 400,
+      //   message: "Cannot find vehicle with number plate",
+      // });
+       return next(new AppError("Cannot find vehicle with number plate", 400));
+    }
+    // return new AppError("Cannot find vehicle with number plate", 400);
     let history = await AppDataSource.getRepository(History).save(
       new History({
+        createdAt: req.body.createdAt,
         type: req.body.typeStatus == "in" ? HistoryType.IN : HistoryType.OUT,
         vehicle: Promise.resolve(vehicle),
         url_image: url,

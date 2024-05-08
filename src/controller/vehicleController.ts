@@ -8,10 +8,19 @@ import { HistoryType } from "../entity/History";
 let vehicleController = {
   createVehicle: catchError(async (req: Request, res: Response, next) => {
     let vehicleRepository = AppDataSource.getRepository(Vehicle);
+
     let owner = await AppDataSource.getRepository(Owner).findOneBy({
       id: req.body.idOwner,
     });
-    if (!owner) return new AppError("Cannot find owner by that id", 400);
+
+    if (!owner) {
+      // return res.status(400).json({
+      //   status: 400,
+      //   message: "Cannot find owner by that id",
+      // });
+      return next(new AppError("Cannot find owner by that id", 400));
+    }
+
     req.body.idOwner = undefined;
     let vehicle = await vehicleRepository.save(
       new Vehicle({
@@ -32,10 +41,25 @@ let vehicleController = {
     let id = req.params.id;
 
     let vehicle = await vehicleRepository.findOneBy({ id });
+    if (!vehicle) {
+      return next(new AppError("Cannot find vehicle by that id", 400));
+      // res.status(400).json({
+      //   status: 400,
+      //   message: "Cannot find vehicle by that id",
+      // });
+    }
+
     if (req.body.idOwner) {
       let owner = await AppDataSource.getRepository(Owner).findOneBy({
         id: req.body.idOwner,
       });
+      if (!owner) {
+        return next(new AppError("Cannot find owner by that id", 400));
+        // return res.status(400).json({
+        //   status: 400,
+        //   message: "Cannot find owner by that id",
+        // });
+      }
       req.body.idOwner = undefined;
       req.body.owner = owner;
     }

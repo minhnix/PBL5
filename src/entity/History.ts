@@ -26,7 +26,7 @@ export class History {
   @Column()
   url_image: string;
 
-  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => Vehicle, (vehicle) => vehicle.history)
