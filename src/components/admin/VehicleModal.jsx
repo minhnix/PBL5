@@ -117,14 +117,14 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Number Plate</span>
+            <span className={`${type == "View" && "hidden"} text-[red]`}>*</span>
+            <span className="ml-1 font-semibold">Number Plate</span>
           </label>
           <input
             className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
               numberPlateError
                 ? "focus:border-border-error-color border-border-error-color"
-                : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
+                : (type == "View"? "cursor-auto" : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]")
             }`}
             type="text"
             name="numberPlate"
@@ -147,12 +147,12 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Owner</span>
+            <span className={`${type == "View" && "hidden"} text-[red]`}>*</span>
+            <span className="ml-1 font-semibold">Owner</span>
           </label>
           {type === "View" && (
             <input
-              className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${"focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"}`}
+              className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${" border-[#d9d9d9] cursor-auto"}`}
               type="text"
               name="owner"
               placeholder="Owner"
@@ -204,12 +204,12 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Status</span>
+            <span className={`${type == "View" && "hidden"} text-[red]`}>*</span>
+            <span className="ml-1 font-semibold">Status</span>
           </label>
           {type == "View" && (
             <input
-              className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${"focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"}`}
+              className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${" border-[#d9d9d9]  cursor-auto"}`}
               type="text"
               name="status"
               readOnly={true}

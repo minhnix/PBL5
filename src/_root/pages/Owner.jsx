@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { DeleteOwnerModal, OwnerModal } from "../../components";
+import {
+  DeleteOwnerModal,
+  OwnerModal,
+  VehicleOwnerModal,
+} from "../../components";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 
@@ -17,6 +21,7 @@ const Owner = () => {
       .get(`http://localhost:3000/api/owners?limit=7&page=${page + 1}`)
       .then((response) => {
         setOwners(response.data.data.owners);
+        // console.log(response.data.data.owners);
         setTotalOwners(response.data.total);
         setStart(response.data.start);
       });
@@ -41,6 +46,11 @@ const Owner = () => {
     setOwnerId(id);
     setModal(true);
     setType("Delete");
+  }
+  function handleViewVehicleModal(id) {
+    setOwnerId(id);
+    setModal(true);
+    setType("Vehicle");
   }
   return (
     <>
@@ -126,6 +136,16 @@ const Owner = () => {
                       >
                         <i className="bx bx-trash-alt text-[#ff4d4f]"></i>
                       </div>
+
+                      <div
+                        onClick={() => {
+                          handleViewVehicleModal(owner.id);
+                        }}
+                        className="rounded p-1 border border-[#529b82] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
+                      >
+                        <i className="bx bxs-car text-[#529b82]"></i>
+                        {/* <i className="bx bx-trash-alt text-[#ff4d4f]"></i> */}
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -154,11 +174,14 @@ const Owner = () => {
           initialPage={page}
         />
       </div>
-      {modal && type != "Delete" && (
+      {modal && type != "Delete" && type != "Vehicle" && (
         <OwnerModal setModal={setModal} type={type} ownerId={ownerId} />
       )}
       {modal && type == "Delete" && (
         <DeleteOwnerModal setModal={setModal} type={type} ownerId={ownerId} />
+      )}
+      {modal && type == "Vehicle" && (
+        <VehicleOwnerModal setModal={setModal} type={type} ownerId={ownerId} />
       )}
     </>
   );

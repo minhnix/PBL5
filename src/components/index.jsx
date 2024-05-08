@@ -9,6 +9,7 @@ import DeleteOwnerModal from "./admin/DeleteOwnerModal";
 import Loading from "./shared/Loading";
 import DeleteVehicleModal from "./admin/DeleteVehicleModal";
 import HistoryDetailModal from "./admin/HistoryDetailModal";
+import VehicleOwnerModal from "./admin/VehicleOwnerModal";
 export {
   Bottombar,
   Topbar,
@@ -21,4 +22,5 @@ export {
   Loading,
   DeleteVehicleModal,
   HistoryDetailModal,
+  VehicleOwnerModal,
 };

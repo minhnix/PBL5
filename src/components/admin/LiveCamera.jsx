@@ -1,3 +1,4 @@
+import ReactPlayer from "react-player";
 const LiveCamera = () => {
   return (
     <div className="w-full max-w-[66.66%] pl-4 flex flex-col ">
@@ -9,8 +10,26 @@ const LiveCamera = () => {
           <span>Camera</span>
         </div>
       </div>
-      <div className="flex-1 bg-red-400 border rounded-bl rounded-br">
-
+      <div className=" max-h-[396px] flex-1 border rounded-bl rounded-br object-fill overflow-hidden">
+        {/* <ReactPlayer
+        url="http://192.168.35.149:81/stream"
+        playing
+        controls
+        width="100%"
+        height="auto"
+      /> */}
+        <img
+          // src="http://192.168.35.149:81/stream"
+          alt=""
+          // style="display: block;-webkit-user-select: none;"
+          className="h-[100%] w-full"
+        />
+        {/* <iframe
+          className="w-full h-full"
+          src="http://192.168.35.149:81/stream  "
+          width="100%"
+          height="auto"
+        ></iframe> */}
       </div>
     </div>
   );

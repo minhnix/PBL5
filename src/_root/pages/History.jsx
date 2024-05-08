@@ -19,6 +19,7 @@ const History = () => {
       .get(`http://localhost:3000/api/history?limit=7&page=${page + 1}`)
       .then((response) => {
         setHistory(response.data.data.history);
+        console.log(response.data.data.history);
         setTotalHistory(response.data.total);
         setStart(response.data.start);
       });
@@ -28,11 +29,10 @@ const History = () => {
     const dateTime = new Date(dateTimeString);
     const options = { year: "numeric", month: "short", day: "2-digit" };
     const formattedDateTime = dateTime.toLocaleDateString("en-US", options);
-    
-    
+
     const optionsHour = { hour: "2-digit", minute: "2-digit" };
     const formatHour = dateTime.toLocaleTimeString("en-US", optionsHour);
-    return formatHour+" "+ formattedDateTime ;
+    return formatHour + " " + formattedDateTime;
   }
 
   return (
@@ -65,6 +65,9 @@ const History = () => {
                 Time
               </th>
               <th className="bg-[#FAFAFA] text-sm font-semibold p-4 border-r  text-left">
+                Type
+              </th>
+              <th className="bg-[#FAFAFA] text-sm font-semibold p-4 border-r  text-left">
                 Action
               </th>
             </tr>
@@ -79,9 +82,11 @@ const History = () => {
                   <td className="text-left p-4 border-b text-sm">
                     {his.__vehicle__?.numberPlate}
                   </td>
+
                   <td className="text-left p-4 border-b text-sm">
                     {handleDate(his.createdAt)}
                   </td>
+                  <td className="text-left p-4 border-b text-sm">{his.type}</td>
                   <td className="text-left p-4 border-b text-sm">
                     <div className="w-full h-full flex items-center ">
                       <div className="rounded p-1 border border-[#8bcc6b] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75">

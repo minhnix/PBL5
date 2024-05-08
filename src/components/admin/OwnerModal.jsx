@@ -86,7 +86,7 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
         className="w-[400px] px-6 py-5 flex flex-col  rounded border bg-white "
       >
         <div className="flex justify-between items-start ">
-          <span className="text-black text-base font-semibold ">
+          <span className="text-black text-base font-bold ">
             {type} owner
           </span>
           <div
@@ -113,13 +113,17 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Name</span>
+            <span className={`${type == "View" ? "hidden" : ""} text-[red] `}>
+              *
+            </span>
+            <span className="ml-1 font-semibold">Name</span>
           </label>
           <input
             className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
               nameError
                 ? "focus:border-border-error-color border-border-error-color"
+                : type == "View"
+                ? "cursor-auto "
                 : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
             }`}
             type="text"
@@ -142,13 +146,17 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Phone</span>
+            <span className={`${type == "View" ? "hidden" : ""} text-[red] `}>
+              *
+            </span>
+            <span className="ml-1 font-semibold">Phone</span>
           </label>
           <input
             className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
               phoneError
                 ? "focus:border-border-error-color border-border-error-color"
+                : type == "View"
+                ? "cursor-auto "
                 : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
             }`}
             type="text"
@@ -173,13 +181,17 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Email</span>
+            <span className={`${type == "View" ? "hidden" : ""} text-[red] `}>
+              *
+            </span>
+            <span className="ml-1 font-semibold">Email</span>
           </label>
           <input
             className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
               emailError
                 ? "focus:border-border-error-color border-border-error-color"
+                : type == "View"
+                ? "cursor-auto "
                 : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
             }`}
             type="text"
@@ -204,13 +216,17 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className="text-[red] mr-1">*</span>
-            <span>Address</span>
+            <span className={`${type == "View" ? "hidden" : ""} text-[red] `}>
+              *
+            </span>
+            <span className="ml-1 font-semibold">Address</span>
           </label>
           <input
             className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
               addressError
                 ? "focus:border-border-error-color border-border-error-color"
+                : type == "View"
+                ? "cursor-auto "
                 : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
             }`}
             type="text"

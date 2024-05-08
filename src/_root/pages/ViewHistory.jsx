@@ -7,6 +7,7 @@ const ViewHistory = () => {
   let [history, setHistory] = useState({});
   useEffect(() => {
     axios.get(`http://localhost:3000/api/history/${id}`).then((response) => {
+      // console.log(response.data.data.history[0]);
       setHistory(response.data.data.history[0]);
     });
   }, []);
