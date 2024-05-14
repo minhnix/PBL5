@@ -28,7 +28,7 @@ let historyController = {
       //   status: 400,
       //   message: "Cannot find vehicle with number plate",
       // });
-       return next(new AppError("Cannot find vehicle with number plate", 400));
+      return next(new AppError("Cannot find vehicle with number plate", 400));
     }
     // return new AppError("Cannot find vehicle with number plate", 400);
     let history = await AppDataSource.getRepository(History).save(
@@ -83,6 +83,109 @@ let historyController = {
     } else {
       totalPromise = AppDataSource.getRepository(History)
         .createQueryBuilder("e")
+        .getCount();
+    }
+    let [history, total] = await Promise.all([historyPromise, totalPromise]);
+    return res.status(200).json({
+      status: "success",
+      total: total,
+      start: offset,
+      results: history.length,
+      data: {
+        history,
+      },
+    });
+  }),
+  getAllVehicleUserHistory: catchError(async function (
+    req: Request,
+    res: Response,
+    next
+  ) {
+    let limit = +req.query.limit || 15;
+    let page = +req.query.page || 1;
+    let offset = (page - 1) * limit;
+    let filter = {};
+    let vehicleId = req.params.idVehicle;
+    if (req.params.id) {
+      filter = {
+        vehicle: {
+          id: vehicleId,
+          owner: {
+            account: {
+              id: req.params.id,
+            },
+          },
+        },
+      };
+    }
+    let historyPromise = AppDataSource.getRepository(History).find({
+      where: filter,
+      relations: ["vehicle", "vehicle.owner", "vehicle.owner.account"],
+      skip: offset,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+    });
+    let totalPromise;
+    if (req.params.id) {
+      totalPromise = AppDataSource.getRepository(History)
+        .createQueryBuilder("e")
+        .leftJoin("e.vehicle", "vehicle")
+        .leftJoin("vehicle.owner", "owner")
+        .leftJoin("owner.account", "account")
+        .where("account.id = :id", { id: req.params.id })
+        .andWhere("vehicle.id = :vehicleId", { vehicleId })
+        .getCount();
+    }
+    let [history, total] = await Promise.all([historyPromise, totalPromise]);
+    return res.status(200).json({
+      status: "success",
+      total: total,
+      start: offset,
+      results: history.length,
+      data: {
+        history,
+      },
+    });
+  }),
+  getAllUserHistory: catchError(async function (
+    req: Request,
+    res: Response,
+    next
+  ) {
+    let limit = +req.query.limit || 15;
+    let page = +req.query.page || 1;
+    let offset = (page - 1) * limit;
+    let filter = {};
+    if (req.params.id) {
+      filter = {
+        vehicle: {
+          owner: {
+            account: {
+              id: req.params.id,
+            },
+          },
+        },
+      };
+    }
+    let historyPromise = AppDataSource.getRepository(History).find({
+      where: filter,
+      relations: ["vehicle", "vehicle.owner", "vehicle.owner.account"],
+      skip: offset,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+    });
+    let totalPromise;
+    if (req.params.id) {
+      totalPromise = AppDataSource.getRepository(History)
+        .createQueryBuilder("e")
+        .leftJoin("e.vehicle", "vehicle")
+        .leftJoin("vehicle.owner", "owner")
+        .leftJoin("owner.account", "account")
+        .where("account.id = :id", { id: req.params.id })
         .getCount();
     }
     let [history, total] = await Promise.all([historyPromise, totalPromise]);

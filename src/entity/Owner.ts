@@ -3,10 +3,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Vehicle } from "./Vehicle";
+import { User } from "./User";
 
 @Entity()
 export class Owner {
@@ -40,4 +43,8 @@ export class Owner {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToOne(() => User, (user) => user.owner, { nullable: true })
+  @JoinColumn()
+  account: Promise<User>;
 }

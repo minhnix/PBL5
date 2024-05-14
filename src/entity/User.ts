@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import { Owner } from "./Owner";
+export enum RoleType {
+  ADMIN = "admin",
+  USER = "user",
+}
 
 @Entity()
 export class User {
@@ -13,4 +18,10 @@ export class User {
 
   @Column({ nullable: false })
   password: string;
+
+  @Column()
+  role: RoleType;
+
+  @OneToOne(() => Owner, (owner) => owner.account, { nullable: true })
+  owner: Promise<Owner>;
 }

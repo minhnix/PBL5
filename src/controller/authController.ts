@@ -6,8 +6,8 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entity";
 import { Request, Response } from "express";
 let authController = {
-  signToken: (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+  signToken: (id, role) => {
+    return jwt.sign({ id: id, role: role }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
   },
@@ -30,8 +30,10 @@ let authController = {
       return next(new AppError("Please provide username and password!", 400));
     }
     let userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOneBy({ username });
-
+    const user = await userRepository.findOne({
+      where: { username },
+      relations: ["owner"],
+    });
 
     if (
       !user ||
@@ -42,7 +44,8 @@ let authController = {
 
     return res.status(201).json({
       status: "success",
-      token: authController.signToken(user.id),
+      token: authController.signToken(user.id, user.role),
+      role: user.role,
       data: {
         user,
       },
@@ -55,6 +58,7 @@ let authController = {
       new User({
         username: req.body.username,
         password: await authController.hashPassword(req.body.password),
+        role: req.body.role,
       })
     );
     return res.status(200).json({

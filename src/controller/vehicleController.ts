@@ -119,6 +119,46 @@ let vehicleController = {
       },
     });
   }),
+  getVehicleByIdUser: catchError(async (req: Request, res: Response, next) => {
+    let limit = +req.query.limit || 15;
+    let page = +req.query.page || 1;
+    let offset = (page - 1) * limit;
+    let vehiclesPromise = AppDataSource.getRepository(Vehicle).find({
+      relations: ["owner"],
+      where: {
+        owner: {
+          id: req.params.id,
+        },
+      },
+      skip: offset,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+    });
+    // let vehiclesPromise = AppDataSource.getRepository(Vehicle)
+    //   .createQueryBuilder("e")
+    //   .leftJoinAndSelect("e.owner", "owner")
+    //   .offset(offset)
+    //   .limit(limit)
+    //   .getMany();
+    let totalPromise = AppDataSource.getRepository(Vehicle)
+      .createQueryBuilder("vehicle")
+      .leftJoin("vehicle.owner", "owner")
+      .where("owner.id = :id", { id: req.params.id })
+      .getCount();;
+
+    let [vehicles, total] = await Promise.all([vehiclesPromise, totalPromise]);
+    return res.status(200).json({
+      status: "success",
+      total: total,
+      start: offset,
+      results: vehicles.length,
+      data: {
+        vehicles,
+      },
+    });
+  }),
   getVehicle: catchError(async (req: Request, res: Response, next) => {
     let vehicle = await AppDataSource.getRepository(Vehicle).find({
       where: { id: req.params.id },
