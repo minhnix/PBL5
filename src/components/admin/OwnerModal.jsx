@@ -38,6 +38,7 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
     validate &&
       axios.post(`http://localhost:3000/api/owners`, owner).then((response) => {
         setResponseMessage(response.data.status);
+        setOwner({});
       });
   }
   function handleUpdate() {
@@ -81,14 +82,14 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
       }}
       className="fixed bg-[rgba(0,0,0,0.05)]  top-0 left-0 right-0 bottom-0  z-50 flex items-center justify-center"
     >
-      <form
-        onSubmit={handleSubmit}
+      <div
+        // onSubmit={handleSubmit}
+
         className="w-[400px] px-6 py-5 flex flex-col  rounded border bg-white "
+        // method="POST"
       >
         <div className="flex justify-between items-start ">
-          <span className="text-black text-base font-bold ">
-            {type} owner
-          </span>
+          <span className="text-black text-base font-bold ">{type} owner</span>
           <div
             onClick={() => {
               setModal((pre) => {
@@ -268,7 +269,7 @@ const OwnerModal = ({ setModal, type, ownerId }) => {
             </>
           )}
         </div>
-      </form>
+      </div>
     </div>
   );
 };

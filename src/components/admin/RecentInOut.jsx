@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const RecentInOut = () => {
   let [history, setHistory] = useState([]);
@@ -98,7 +99,8 @@ const RecentInOut = () => {
       </div> */}
       {history.map((his, index) => {
         return (
-          <div
+          <Link
+            to={`/view-history/${his.id}`}
             key={his.id}
             className="flex gap-5 flex-row bg-white px-4 py-3 border-l border-r border-b"
           >
@@ -115,7 +117,7 @@ const RecentInOut = () => {
                 {his.__vehicle__?.numberPlate} {his.type}
               </div>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>

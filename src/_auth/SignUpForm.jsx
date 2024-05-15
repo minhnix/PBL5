@@ -1,27 +1,35 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { loginSuccess } from "../redux/authSlice";
 
-const SignInForm = () => {
+const SignUpForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [passwordConfirmError, setPasswordConfirmError] = useState("");
   const [responseError, setResponseError] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
 
   // const [showPassWord, setShowPassWord] = useState(false);
   const [account, setAccount] = useState({
     username: "",
     password: "",
+    passwordConfirm: "",
+    role: "user",
   });
+
   function handleChangeInput(e) {
     setResponseError("");
+    setResponseMessage("");
     if (e.target.name == "username") {
       setUsernameError("");
-    } else {
+    } else if (e.target.name == "password") {
       setPasswordError("");
+    } else {
+      setPasswordConfirmError("");
     }
     setAccount({ ...account, [e.target.name]: e.target.value });
   }
@@ -30,32 +38,37 @@ const SignInForm = () => {
     if (!account.username.trim()) {
       setUsernameError("Username cannot be empty");
     }
+    if (account.passwordConfirm != account.password) {
+      setPasswordConfirmError("Password confirm not match with your password");
+    }
     // if (!account.password.trim()) {
     //   setPasswordError("Password cannot be empty");
     // }
 
-    if (!passwordError && !usernameError) {
+    if (!passwordError && !usernameError && !passwordConfirmError) {
       axios
-        .post("http://localhost:3000/api/users/logIn", { ...account })
+        .post("http://localhost:3000/api/users/signUp", { ...account })
         .then((response) => {
           // setPost(response.data);
-          console.log(response.data);
-          dispatch(
-            loginSuccess({
-              token: response.data.token,
-              role: response.data.role,
-              user:response.data.data.user
-            })
-          );
-          if(response.data.role == "admin")
-            {
-              navigate("/admin");
-            }
-            else
-            {
-              navigate("/")
-            }
-          // dispatch(loginSuccess(response.data.token));
+          // console.log(response.status);
+          //   dispatch(
+          //     loginSuccess({
+          //       token: response.data.token,
+          //       role: response.data.role,
+          //     })
+          //   );
+          //   // dispatch(loginSuccess(response.data.token));
+          //   navigate("/");
+          if (response.data.status == "success") {
+            setAccount({
+              username: "",
+              password: "",
+              passwordConfirm: "",
+              role: "user",
+            });
+            setResponseMessage("Register successfully!");
+          }
+          //   console.log(response);
         })
         .catch(function (err) {
           setResponseError(err.response.data.message);
@@ -101,7 +114,7 @@ const SignInForm = () => {
 
           <div className="bg-[white] w-full max-w-[400px] p-8 rounded-md">
             <span className="block w-full mt-3 mb-3 text-[#4096ff] text-[24px] font-bold  text-center">
-              Sign in to your account
+              Sign up
             </span>
             <div className="mb-6 flex justify-center items-center">
               <span
@@ -109,7 +122,14 @@ const SignInForm = () => {
                   responseError ? "visible" : "invisible"
                 } text-sm text-error-color`}
               >
-                {responseError ? responseError : "."}
+                {responseError ? responseError : ""}
+              </span>
+              <span
+                className={`${
+                  responseMessage ? "visible" : "invisible"
+                } text-sm text-success-color`}
+              >
+                {responseMessage ? responseMessage : ""}
               </span>
             </div>
             <div className="w-full flex flex-col">
@@ -126,6 +146,7 @@ const SignInForm = () => {
                 name="username"
                 placeholder="Username"
                 onChange={handleChangeInput}
+                value={account.username}
               />
               <span
                 className={`${
@@ -151,6 +172,7 @@ const SignInForm = () => {
                   name="password"
                   placeholder="●●●●●●●"
                   onChange={handleChangeInput}
+                  value={account.password}
                 />
               </div>
               <span
@@ -161,11 +183,38 @@ const SignInForm = () => {
                 {passwordError}.
               </span>
             </div>
+            <div className="w-full flex flex-col ">
+              <label className="text-[14px] text-black pb-2" htmlFor="">
+                Password Confirm
+              </label>
+              <div>
+                <input
+                  className={`bg-white w-full px-[11px] py-[7px] rounded border transition-all  outline-none ${
+                    passwordConfirmError
+                      ? "focus:border-border-error-color border-border-error-color"
+                      : "focus:border-[#1677ff]  border-[#d9d9d9]  hover:border-[#1677ff] "
+                  }`}
+                  // type={`${showPassWord ? "text" : "password"}`}
+                  type="password"
+                  name="passwordConfirm"
+                  placeholder="●●●●●●●"
+                  onChange={handleChangeInput}
+                  value={account.passwordConfirm}
+                />
+              </div>
+              <span
+                className={`${
+                  passwordConfirmError ? "visible" : "invisible"
+                } text-sm text-error-color`}
+              >
+                {passwordConfirmError}.
+              </span>
+            </div>
             <div>
               <span className="text-sm">
-                Not a member yet? {" "}
+                Have an account?{" "}
                 <span className="underline font-semibold">
-                  <Link to={"/sign-up"}> Sign up</Link>
+                  <Link to={"/sign-in"}>Sign In</Link> 
                 </span>{" "}
                 here
               </span>
@@ -176,7 +225,7 @@ const SignInForm = () => {
                 type="submit"
                 onClick={handleSubmit}
               >
-                Sign in
+                Sign up
               </button>
             </div>
           </div>
@@ -186,4 +235,4 @@ const SignInForm = () => {
   );
 };
 
-export default SignInForm;
+export default SignUpForm;

@@ -27,7 +27,7 @@ const LeftSidebar = () => {
       </div>
       <section className="pt-2 flex flex-col">
         <Link
-          to={"/"}
+          to={"/admin"}
           className={` m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded ${
             location.pathname.split("/")[1] == ""
               ? "bg-[#e6f4ff] text-primary-color"
@@ -60,6 +60,17 @@ const LeftSidebar = () => {
           <span className="ml-2 text-[14px]">Vehicle</span>
         </Link>
         <Link
+          to={"/vehiclePending"}
+          className={` m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded ${
+            location.pathname.split("/")[1] == "vehiclePending"
+              ? "bg-[#e6f4ff] text-primary-color"
+              : "hover:bg-[#f0f0f0]"
+          } `}
+        >
+          <i className="bx bx-error-alt"></i>
+          <span className="ml-2 text-[14px]">Vehicle Pending</span>
+        </Link>
+        <Link
           to={"/history"}
           className={` m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded ${
             location.pathname.split("/")[1] == "history"
@@ -76,7 +87,7 @@ const LeftSidebar = () => {
           className="m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer  rounded hover:bg-[#f0f0f0]"
         >
           <i className="bx bx-log-out"></i>
-          <span className="ml-2 text-[14px]">Đăng xuất</span>
+          <span className="ml-2 text-[14px]">Log Out</span>
         </div>
       </section>
     </aside>

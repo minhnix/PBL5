@@ -3,8 +3,9 @@ import axios from "axios";
 import { DeleteVehicleModal, VehicleModal } from "../../components";
 import ReactPaginate from "react-paginate";
 import { Link, useParams } from "react-router-dom";
+import DeleteVehiclePendingModal from "../../components/admin/DeleteVehiclePendingModal";
 
-const Vehicle = () => {
+const VehiclePending = () => {
   const { id } = useParams();
   let [vehicles, setVehicles] = useState([]);
   let [start, setStart] = useState(0);
@@ -16,46 +17,25 @@ const Vehicle = () => {
   let [modal, setModal] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      axios
-        .get(`http://localhost:3000/api/vehicles/user/${id}?limit=7&page=${page + 1}`)
-        .then((response) => {
-          setVehicles(response.data.data.vehicles);
-          setTotalVehicles(response.data.total);
-          console.log(response.data.total);
-          setStart(response.data.start);
-        });
-    } else {
-      axios
-        .get(`http://localhost:3000/api/vehicles?limit=7&page=${page + 1}`)
-        .then((response) => {
-          setVehicles(response.data.data.vehicles);
-          setTotalVehicles(response.data.total);
-          console.log(response.data.total);
-          setStart(response.data.start);
-        });
-    }
+    axios
+      .get(`http://localhost:3000/api/vehiclesPending?limit=7&page=${page + 1}`)
+      .then((response) => {
+        setVehicles(response.data.data.vehicles);
+        setTotalVehicles(response.data.total);
+        console.log(response.data.total);
+        setStart(response.data.start);
+      });
   }, [modal, page]);
 
-  function handleCreateModal() {
-    setVehicleId("");
-    setModal(true);
-    setType("Create");
-  }
-  function handleViewModal(id) {
-    setVehicleId(id);
-    setModal(true);
-    setType("View");
-  }
-  function handleUpdateModal(id) {
-    setVehicleId(id);
-    setModal(true);
-    setType("Update");
-  }
   function handleDeleteModal(id) {
     setVehicleId(id);
     setModal(true);
     setType("Delete");
+  }
+  function handleApproveModal(id) {
+    setVehicleId(id);
+    setModal(true);
+    setType("Approve");
   }
   return (
     <>
@@ -63,16 +43,7 @@ const Vehicle = () => {
         <div className="flex items-center justify-center">
           <span className="text-xl font-semibold">Vehicle</span>
         </div>
-        <div>
-          <button
-            className="px-2 py-1 bg-primary-color rounded flex items-center justify-center gap-1 hover:opacity-80"
-            type="button"
-            onClick={handleCreateModal}
-          >
-            <i className="bx bx-plus text-white"></i>
-            <span className="text-white">Create</span>
-          </button>
-        </div>
+        <div></div>
       </div>
       <div className="min-h-[450px]">
         <table className="w-full">
@@ -86,6 +57,12 @@ const Vehicle = () => {
               </th>
               <th className="bg-[#FAFAFA] text-sm font-semibold p-4 border-r  text-left">
                 Owner
+              </th>
+              <th className="bg-[#FAFAFA] text-sm font-semibold p-4 border-r  text-left">
+                Phone
+              </th>
+              <th className="bg-[#FAFAFA] text-sm font-semibold p-4 border-r  text-left">
+                Address
               </th>
               <th className="bg-[#FAFAFA] text-sm font-semibold p-4 border-r  text-left">
                 Action
@@ -107,29 +84,20 @@ const Vehicle = () => {
                       {vehicle?.__owner__?.name}
                     </td>
                     <td className="text-left p-4 border-b text-sm">
+                      {vehicle?.__owner__?.phone}
+                    </td>
+                    <td className="text-left p-4 border-b text-sm">
+                      {vehicle?.__owner__?.address}
+                    </td>
+                    <td className="text-left p-4 border-b text-sm">
                       <div className="w-full h-full flex items-center ">
-                        <Link
-                          to={`/history/${vehicle.id}`}
-                          onClick={() => {}}
-                          className="rounded p-1 border border-[#fab574] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
-                        >
-                          <i className="bx bx-history text-[#ffa149]"></i>
-                        </Link>
                         <div
                           onClick={() => {
-                            handleViewModal(vehicle.id);
+                            handleApproveModal(vehicle.id);
                           }}
-                          className="rounded p-1 border border-[#8bcc6b] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
+                          className="rounded p-1 border border-success-color max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
                         >
-                          <i className="bx bx-show text-[#4dc015]"></i>
-                        </div>
-                        <div
-                          onClick={() => {
-                            handleUpdateModal(vehicle.id);
-                          }}
-                          className="rounded p-1 border border-[#d9d9d9]  hover:border-primary-color max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer "
-                        >
-                          <i className="bx bx-edit-alt hover:text-primary-color"></i>
+                          <i className="bx bx-check text-success-color"></i>
                         </div>
                         <div
                           onClick={() => {
@@ -168,11 +136,9 @@ const Vehicle = () => {
           initialPage={page}
         />
       </div>
-      {modal && type != "Delete" && (
-        <VehicleModal setModal={setModal} type={type} vehicleId={vehicleId} />
-      )}
-      {modal && type == "Delete" && (
-        <DeleteVehicleModal
+
+      {modal &&  (
+        <DeleteVehiclePendingModal
           setModal={setModal}
           type={type}
           vehicleId={vehicleId}
@@ -182,4 +148,4 @@ const Vehicle = () => {
   );
 };
 
-export default Vehicle;
+export default VehiclePending;

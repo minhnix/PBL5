@@ -10,6 +10,11 @@ import Loading from "./shared/Loading";
 import DeleteVehicleModal from "./admin/DeleteVehicleModal";
 import HistoryDetailModal from "./admin/HistoryDetailModal";
 import VehicleOwnerModal from "./admin/VehicleOwnerModal";
+import HeaderUser from "./shared/HeaderUser";
+import Forbidden from "./user/Forbidden";
+import Require from "./user/Require";
+import ListVehicle from "./user/ListVehicle";
+import CardVehicle from "./user/CardVehicle";
 export {
   Bottombar,
   Topbar,
@@ -23,4 +28,9 @@ export {
   DeleteVehicleModal,
   HistoryDetailModal,
   VehicleOwnerModal,
+  HeaderUser,
+  Forbidden,
+  Require,
+  ListVehicle,
+  CardVehicle,
 };

@@ -18,7 +18,7 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
         .get(`http://localhost:3000/api/vehicles/${vehicleId}`)
         .then((response) => {
           setVehicle(response.data.data.vehicle[0]);
-          console.log(response);
+          // console.log(response);
           setOwnerId(response.data.data.vehicle[0].__owner__.id);
         });
   }, []);
@@ -63,7 +63,9 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
           status: vehicle.status || "in",
         })
         .then((response) => {
+          console.log(response)
           setResponseMessage(response.data.status);
+          setVehicle({});
         });
   }
   function handleUpdate() {
@@ -82,11 +84,11 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
   return (
     <div
       onClick={() => {
-        console.log(vehicle);
+        console.log(vehicle, ownerId);
       }}
       className="fixed bg-[rgba(0,0,0,0.05)]  top-0 left-0 right-0 bottom-0  z-50 flex items-center justify-center"
     >
-      <form
+      <div
         onSubmit={handleSubmit}
         className="w-[400px] px-6 py-5 flex flex-col  rounded border bg-white "
       >
@@ -117,14 +119,18 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className={`${type == "View" && "hidden"} text-[red]`}>*</span>
+            <span className={`${type == "View" && "hidden"} text-[red]`}>
+              *
+            </span>
             <span className="ml-1 font-semibold">Number Plate</span>
           </label>
           <input
             className={`bg-white w-full px-[11px] py-[4px] text-sm rounded border  transition-all  outline-none ${
               numberPlateError
                 ? "focus:border-border-error-color border-border-error-color"
-                : (type == "View"? "cursor-auto" : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]")
+                : type == "View"
+                ? "cursor-auto"
+                : "focus:border-[#1677ff] border-[#d9d9d9]  hover:border-[#1677ff]"
             }`}
             type="text"
             name="numberPlate"
@@ -147,7 +153,9 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className={`${type == "View" && "hidden"} text-[red]`}>*</span>
+            <span className={`${type == "View" && "hidden"} text-[red]`}>
+              *
+            </span>
             <span className="ml-1 font-semibold">Owner</span>
           </label>
           {type === "View" && (
@@ -204,7 +212,9 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             className="text-[14px] text-black pb-2 flex items-center"
             htmlFor=""
           >
-            <span className={`${type == "View" && "hidden"} text-[red]`}>*</span>
+            <span className={`${type == "View" && "hidden"} text-[red]`}>
+              *
+            </span>
             <span className="ml-1 font-semibold">Status</span>
           </label>
           {type == "View" && (
@@ -257,6 +267,7 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
               </button>
               <button
                 type="submit"
+                onClick={handleSubmit}
                 className="px-[15px] py-1 text-sm rounded text-white bg-primary-color hover:opacity-80 transition-all delay-75"
               >
                 Save
@@ -264,7 +275,7 @@ const VehicleModal = ({ setModal, type, vehicleId }) => {
             </>
           )}
         </div>
-      </form>
+      </div>
     </div>
   );
 };
