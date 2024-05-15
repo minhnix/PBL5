@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import ownerRoutes from "./route/ownerRoutes";
 import userRoutes from "./route/userRoutes";
 import vehicleRoutes from "./route/vehicleRoutes";
+import vehiclePendingRoutes from "./route/vehiclePendingRoutes";
 import historyRoutes from "./route/historyRoutes";
 import "reflect-metadata";
 import { AppError } from "./utils/appError";
@@ -20,6 +21,7 @@ const { PORT = 3000 } = process.env;
 app.use("/api/owners", ownerRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/vehiclesPending", vehiclePendingRoutes);
 app.use("/api/history", historyRoutes);
 
 app.get("*", (req: Request, res: Response) => {

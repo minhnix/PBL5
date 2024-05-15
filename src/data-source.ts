@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { History, Owner, User, Vehicle } from "./entity";
+import { VehiclePending } from "./entity/VehiclePending";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -11,7 +12,7 @@ export const AppDataSource = new DataSource({
   database: "pbl5",
   synchronize: true,
   logging: false,
-  entities: [User, Vehicle, Owner, History],
+  entities: [User, Vehicle, Owner, History, VehiclePending],
   migrations: [],
   subscribers: [],
 });

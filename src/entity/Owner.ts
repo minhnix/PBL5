@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { Vehicle } from "./Vehicle";
 import { User } from "./User";
+import { VehiclePending } from "./VehiclePending";
 
 @Entity()
 export class Owner {
@@ -36,7 +37,14 @@ export class Owner {
     nullable: true,
     onDelete: "CASCADE",
   })
-  vehicles: Promise<Owner[]>;
+  vehicles: Promise<Vehicle[]>;
+
+  @OneToMany(() => VehiclePending, (vehicle) => vehicle.owner, {
+    cascade: true,
+    nullable: true,
+    onDelete: "CASCADE",
+  })
+  vehiclesPending: Promise<VehiclePending[]>;
 
   @DeleteDateColumn()
   deletedAt?: Date;

@@ -22,6 +22,9 @@ export class User {
   @Column()
   role: RoleType;
 
-  @OneToOne(() => Owner, (owner) => owner.account, { nullable: true })
+  @OneToOne(() => Owner, (owner) => owner.account, {
+    cascade: true,
+    nullable: true,
+  })
   owner: Promise<Owner>;
 }

@@ -11,8 +11,8 @@ import { Owner } from "./Owner";
 import { History, HistoryType } from "./History";
 
 @Entity()
-export class Vehicle {
-  constructor(partial?: Partial<Vehicle>) {
+export class VehiclePending {
+  constructor(partial?: Partial<VehiclePending>) {
     Object.assign(this, partial);
   }
   @PrimaryGeneratedColumn("uuid")
@@ -24,16 +24,9 @@ export class Vehicle {
   @Column()
   status: HistoryType;
 
-  @ManyToOne(() => Owner, (owner) => owner.vehicles)
+  @ManyToOne(() => Owner, (owner) => owner.vehiclesPending)
   owner: Promise<Owner>;
-
-  @OneToMany(() => History, (history) => history.vehicle)
-  history: Promise<History[]>;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
 
   @CreateDateColumn()
   createdAt: Date;
-  
 }

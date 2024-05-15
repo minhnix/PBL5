@@ -3,7 +3,7 @@ import { catchError } from "../utils/catchError";
 import { AppError } from "../utils/appError";
 import * as bcrypt from "bcrypt";
 import { AppDataSource } from "../data-source";
-import { User } from "../entity";
+import { Owner, User } from "../entity";
 import { Request, Response } from "express";
 let authController = {
   signToken: (id, role) => {
@@ -71,5 +71,52 @@ let authController = {
   hashPassword: async (password) => {
     return await bcrypt.hash(password, 10);
   },
+  getAccount: catchError(async (req: Request, res: Response, next) => {
+    let userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: { id: req.params.id },
+      relations: ["owner"],
+    });
+
+    return res.status(200).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  }),
+  updateAccount: catchError(async (req: Request, res: Response, next) => {
+    let userRepository = AppDataSource.getRepository(User);
+    
+    if(req.body.id)
+      {
+        const owner = await AppDataSource.getRepository(Owner).findOne({
+          where: { id: req.body.id },
+        });
+        await AppDataSource.getRepository(Owner).save(new Owner({...owner, ...req.body}))
+      }
+      else
+      {
+        const userUpdate = await userRepository.findOne({
+          where: { id: req.params.id },
+          relations: ["owner"],
+        });
+        let owner = await AppDataSource.getRepository(Owner).save(new Owner({ ...req.body}))
+        userUpdate.owner = Promise.resolve(owner);
+        await userRepository.save(userUpdate);
+      }
+    const user = await userRepository.findOne({
+        where: { id: req.params.id },
+        relations: ["owner"],
+      });
+    return res.status(200).json({
+      status: "success",
+      data: {
+        user,
+      },
+    });
+  }),
+   
+  
 };
 export { authController };
