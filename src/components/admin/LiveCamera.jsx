@@ -1,5 +1,14 @@
-import ReactPlayer from "react-player";
+import { useState } from "react";
 const LiveCamera = () => {
+  let [videoUrl, setVideoUrl] = useState(0);
+  let handleSwitchCamera = () => {
+    if (videoUrl == 0) {
+      setVideoUrl(1)
+    }
+    else if (videoUrl == 1) {
+      setVideoUrl(0)
+    }
+  };
   return (
     <div className="w-full max-w-[66.66%] pl-4 flex flex-col ">
       <div className="w-full py-2 px-4 flex flex-row gap-5 bg-white border-l border-r border-b rounded-tr rounded-tl">
@@ -10,26 +19,18 @@ const LiveCamera = () => {
           <span>Camera</span>
         </div>
       </div>
-      <div className=" max-h-[396px] flex-1 border rounded-bl rounded-br object-fill overflow-hidden">
-        {/* <ReactPlayer
-        url="http://192.168.35.149:81/stream"
-        playing
-        controls
-        width="100%"
-        height="auto"
-      /> */}
+      <div className=" max-h-[396px] flex-1 border rounded-bl rounded-br object-fill overflow-hidden relative">
+        <div
+          onClick={handleSwitchCamera}
+          className="absolute top-2 right-2 pointer"
+        >
+          <i className="bx bx-sync text-2xl border px-1"></i>
+        </div>
         <img
-          // src="http://192.168.35.149:81/stream"
+          src={`http://localhost:500${videoUrl}/video`}
           alt=""
-          // style="display: block;-webkit-user-select: none;"
-          className="h-[100%] w-full"
+          className="h-[100%] w-full bg-red-300"
         />
-        {/* <iframe
-          className="w-full h-full"
-          src="http://192.168.35.149:81/stream  "
-          width="100%"
-          height="auto"
-        ></iframe> */}
       </div>
     </div>
   );

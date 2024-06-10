@@ -34,6 +34,7 @@ const App = () => {
           <Route element={<UserLayout />}>
             <Route path="/" element={<HomeUser />} />
           </Route>
+
           <Route element={<UserAuthLayout />}>
             <Route path="/user/vehicle" element={<VehicleUser />} />
             <Route path="/user/history" element={<HistoryDetailUser />} />
