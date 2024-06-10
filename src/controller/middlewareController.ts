@@ -7,7 +7,12 @@ let middleware = {
     next();
   },
   async handleNotificationVehicle(req, res, next) {
-    const response = await axios.get("http://localhost:5000/webhook");
+    try {
+      axios.get("http://localhost:5000/webhook");
+      console.log("da goi api");
+    } catch (error) {
+      console.error("Error calling API:", error);
+    }
     next();
   },
 };
