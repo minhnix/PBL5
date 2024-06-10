@@ -5,6 +5,7 @@ import { Owner, Vehicle } from "../entity";
 import { AppError } from "../utils/appError";
 import { HistoryType } from "../entity/History";
 import { VehiclePending } from "../entity/VehiclePending";
+import { vehicleController } from "./vehicleController";
 
 let vehiclePendingController = {
   createVehicle: catchError(async (req: Request, res: Response, next) => {
@@ -180,6 +181,8 @@ let vehiclePendingController = {
       })
     );
     await AppDataSource.getRepository(VehiclePending).delete(req.params.id);
+
+    vehicleController.handleNotificationVehicle()
     return res.status(200).json({
       status: "success",
       data: {

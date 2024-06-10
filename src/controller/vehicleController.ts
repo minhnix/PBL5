@@ -4,6 +4,7 @@ import { AppDataSource } from "../data-source";
 import { Owner, Vehicle } from "../entity";
 import { AppError } from "../utils/appError";
 import { HistoryType } from "../entity/History";
+import axios from "axios";
 
 let vehicleController = {
   createVehicle: catchError(async (req: Request, res: Response, next) => {
@@ -29,6 +30,7 @@ let vehicleController = {
         status: req.body.status == "in" ? HistoryType.IN : HistoryType.OUT,
       })
     );
+    vehicleController.handleNotificationVehicle()
     return res.status(200).json({
       status: "success",
       data: {
@@ -74,6 +76,8 @@ let vehicleController = {
     // }
     let updateVehicle = await vehicleRepository.save(newVehicle);
     console.log(updateVehicle);
+    vehicleController.handleNotificationVehicle()
+
     return res.status(200).json({
       status: "success",
       data: {
@@ -84,6 +88,7 @@ let vehicleController = {
   deleteVehicle: catchError(async (req: Request, res: Response, next) => {
     let id = req.params.id;
     await AppDataSource.getRepository(Vehicle).softDelete(id);
+    vehicleController.handleNotificationVehicle()
     return res.status(200).json({
       status: "success",
     });
@@ -189,5 +194,14 @@ let vehicleController = {
       in: totalVehicleIn,
     });
   }),
+   handleNotificationVehicle: async () => {
+    try {
+      axios.post("http://127.0.0.1:5000/webhook");
+      axios.post("http://127.0.0.1:5001/webhook");
+      console.log("OKE WEBHOOK")
+    } catch (error) {
+      console.log("CSKodjaiojdfsioajdioas ",error);
+    }
+  },
 };
 export { vehicleController };
