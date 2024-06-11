@@ -30,7 +30,7 @@ let vehicleController = {
         status: req.body.status == "in" ? HistoryType.IN : HistoryType.OUT,
       })
     );
-    vehicleController.handleNotificationVehicle()
+    vehicleController.handleNotificationVehicle();
     return res.status(200).json({
       status: "success",
       data: {
@@ -76,7 +76,7 @@ let vehicleController = {
     // }
     let updateVehicle = await vehicleRepository.save(newVehicle);
     console.log(updateVehicle);
-    vehicleController.handleNotificationVehicle()
+    vehicleController.handleNotificationVehicle();
 
     return res.status(200).json({
       status: "success",
@@ -88,7 +88,7 @@ let vehicleController = {
   deleteVehicle: catchError(async (req: Request, res: Response, next) => {
     let id = req.params.id;
     await AppDataSource.getRepository(Vehicle).softDelete(id);
-    vehicleController.handleNotificationVehicle()
+    vehicleController.handleNotificationVehicle();
     return res.status(200).json({
       status: "success",
     });
@@ -97,21 +97,60 @@ let vehicleController = {
     let limit = +req.query.limit || 15;
     let page = +req.query.page || 1;
     let offset = (page - 1) * limit;
-    let vehiclesPromise = AppDataSource.getRepository(Vehicle).find({
-      relations: ["owner"],
-      skip: offset,
-      take: limit,
-      order: {
-        createdAt: "DESC",
-      },
-    });
+    // let vehiclesPromise = AppDataSource.getRepository(Vehicle).find({
+    //   relations: ["owner"],
+    //   skip: offset,
+    //   take: limit,
+    //   order: {
+    //     createdAt: "DESC",
+    //   },
+    // });
+    // if(req.query.search)
+    //   {
+    //     vehiclesPromise = vehiclesPromise
+    //   }
     // let vehiclesPromise = AppDataSource.getRepository(Vehicle)
     //   .createQueryBuilder("e")
     //   .leftJoinAndSelect("e.owner", "owner")
     //   .offset(offset)
     //   .limit(limit)
     //   .getMany();
-    let totalPromise = AppDataSource.getRepository(Vehicle).count({});
+
+    let vehiclesQueryBuilder = AppDataSource.getRepository(Vehicle)
+      .createQueryBuilder("v")
+      .leftJoinAndSelect("v.owner", "owner");
+    let totalQueryBuilder = AppDataSource.getRepository(Vehicle)
+      .createQueryBuilder("v")
+      .leftJoin("v.owner", "owner");
+
+    if (req.query.search) {
+      vehiclesQueryBuilder = vehiclesQueryBuilder.where(
+        "v.numberPlate LIKE :searchTerm OR owner.name LIKE :searchTerm",
+        { searchTerm: `%${req.query.search}%` }
+      );
+      totalQueryBuilder = totalQueryBuilder.where(
+        "v.numberPlate LIKE :searchTerm OR owner.name LIKE :searchTerm",
+        { searchTerm: `%${req.query.search}%` }
+      );
+    }
+
+    if (req.query.search) {
+      vehiclesQueryBuilder = vehiclesQueryBuilder.where(
+        "v.numberPlate LIKE :searchTerm OR owner.name LIKE :searchTerm",
+        { searchTerm: `%${req.query.search}%` }
+      );
+      totalQueryBuilder = totalQueryBuilder.where(
+        "v.numberPlate LIKE :searchTerm OR owner.name LIKE :searchTerm",
+        { searchTerm: `%${req.query.search}%` }
+      );
+    }
+    let vehiclesPromise = vehiclesQueryBuilder
+      .orderBy("v.createdAt", "DESC")
+      .skip(offset)
+      .take(limit)
+      .getMany();
+
+    let totalPromise = totalQueryBuilder.getCount();
 
     let [vehicles, total] = await Promise.all([vehiclesPromise, totalPromise]);
     return res.status(200).json({
@@ -151,7 +190,7 @@ let vehicleController = {
       .createQueryBuilder("vehicle")
       .leftJoin("vehicle.owner", "owner")
       .where("owner.id = :id", { id: req.params.id })
-      .getCount();;
+      .getCount();
 
     let [vehicles, total] = await Promise.all([vehiclesPromise, totalPromise]);
     return res.status(200).json({
@@ -194,13 +233,13 @@ let vehicleController = {
       in: totalVehicleIn,
     });
   }),
-   handleNotificationVehicle: async () => {
+  handleNotificationVehicle: async () => {
     try {
       axios.post("http://127.0.0.1:5000/webhook");
       axios.post("http://127.0.0.1:5001/webhook");
-      console.log("OKE WEBHOOK")
+      console.log("OKE WEBHOOK");
     } catch (error) {
-      console.log("CSKodjaiojdfsioajdioas ",error);
+      console.log("CSKodjaiojdfsioajdioas ", error);
     }
   },
 };

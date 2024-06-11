@@ -58,33 +58,74 @@ let historyController = {
     let page = +req.query.page || 1;
     let offset = (page - 1) * limit;
     let filter = {};
-    if (req.params.id) {
-      filter = {
-        vehicle: {
-          id: req.params.id,
-        },
-      };
-    }
-    let historyPromise = AppDataSource.getRepository(History).find({
-      where: filter,
-      relations: ["vehicle"],
-      skip: offset,
-      take: limit,
-      order: {
-        createdAt: "DESC",
-      },
-    });
-    let totalPromise;
-    if (req.params.id) {
-      totalPromise = AppDataSource.getRepository(History)
-        .createQueryBuilder("e")
-        .where("e.vehicle.id = :id", { id: req.params.id })
-        .getCount();
+    const id = req.params.id;
+    // if (req.params.id) {
+    //   filter = {
+    //     vehicle: {
+    //       id: req.params.id,
+    //     },
+    //   };
+    // }
+    // let historyPromise = AppDataSource.getRepository(History).find({
+    //   where: filter,
+    //   relations: ["vehicle"],
+    //   skip: offset,
+    //   take: limit,
+    //   order: {
+    //     createdAt: "DESC",
+    //   },
+    // });
+    let historyQueryBuilder = AppDataSource.getRepository(History)
+      .createQueryBuilder("history")
+      .leftJoinAndSelect("history.vehicle", "vehicle")
+      .skip(offset)
+      .take(limit)
+      .orderBy("history.createdAt", "DESC");
+
+    if (id) {
+      historyQueryBuilder.andWhere("vehicle.id = :id", { id });
     } else {
-      totalPromise = AppDataSource.getRepository(History)
-        .createQueryBuilder("e")
-        .getCount();
+      if (req.query.search) {
+        historyQueryBuilder = historyQueryBuilder.where(
+          "vehicle.numberPlate LIKE :searchTerm",
+          { searchTerm: `%${req.query.search}%` }
+        );
+      }
+      if (req.query.searchDate) {
+        historyQueryBuilder = historyQueryBuilder.where(
+          "history.createdAt LIKE :searchDate",
+          { searchDate: `%${req.query.searchDate}%` }
+        );
+      }
     }
+    let historyPromise = historyQueryBuilder.getMany();
+
+    let totalQueryBuilder;
+    if (req.params.id) {
+      totalQueryBuilder = AppDataSource.getRepository(History)
+        .createQueryBuilder("e")
+        .where("e.vehicle.id = :id", { id: req.params.id });
+    } else {
+      totalQueryBuilder = AppDataSource.getRepository(History)
+        .createQueryBuilder("e")
+        .leftJoinAndSelect("e.vehicle", "vehicle");
+
+      if (req.query.search) {
+        totalQueryBuilder = totalQueryBuilder.where(
+          "vehicle.numberPlate LIKE :searchTerm",
+          { searchTerm: `%${req.query.search}%` }
+        );
+      }
+      if (req.query.searchDate) {
+        totalQueryBuilder = totalQueryBuilder.where(
+          "e.createdAt LIKE :searchDate",
+          { searchDate: `%${req.query.searchDate}%` }
+        );
+      }
+    }
+
+    let totalPromise = totalQueryBuilder.getCount();
+
     let [history, total] = await Promise.all([historyPromise, totalPromise]);
     return res.status(200).json({
       status: "success",

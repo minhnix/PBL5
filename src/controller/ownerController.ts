@@ -50,16 +50,30 @@ let ownerController = {
     let limit = +req.query.limit || 15;
     let page = +req.query.page || 1;
     let offset = (page - 1) * limit;
-    let ownersPromise = AppDataSource.getRepository(Owner)
+    let ownersQueryBuilder = AppDataSource.getRepository(Owner)
       .createQueryBuilder("e")
-      .loadRelationCountAndMap("e.vehiclesCount", "e.vehicles")
+      .loadRelationCountAndMap("e.vehiclesCount", "e.vehicles");
+    let totalQueryBuilder =
+      AppDataSource.getRepository(Owner).createQueryBuilder("e");
+    // .getCount();
+    if (req.query.search) {
+      ownersQueryBuilder = ownersQueryBuilder.where(
+        "e.name LIKE :searchTerm OR e.address LIKE :searchTerm OR e.email LIKE :searchTerm OR e.phone LIKE :searchTerm",
+        { searchTerm: `%${req.query.search}%` }
+      );
+
+      totalQueryBuilder = totalQueryBuilder.where(
+        "e.name LIKE :searchTerm OR e.address LIKE :searchTerm OR e.email LIKE :searchTerm OR e.phone LIKE :searchTerm",
+        { searchTerm: `%${req.query.search}%` }
+      );
+    }
+    let totalPromise = totalQueryBuilder.getCount();
+    let ownersPromise = ownersQueryBuilder
       .orderBy("e.createdAt", "DESC")
       .offset(offset)
       .limit(limit)
       .getMany();
-    let totalPromise = AppDataSource.getRepository(Owner)
-      .createQueryBuilder("e")
-      .getCount();
+
     let [owners, total] = await Promise.all([ownersPromise, totalPromise]);
     return res.status(200).json({
       status: "success",
