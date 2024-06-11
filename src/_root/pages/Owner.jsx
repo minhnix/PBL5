@@ -6,8 +6,15 @@ import {
 } from "../../components";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
+import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 const Owner = () => {
+  let query = useQuery();
   let [modal, setModal] = useState(false);
   let [owners, setOwners] = useState([]);
   let [start, setStart] = useState(0);
@@ -17,14 +24,16 @@ const Owner = () => {
   let [totalOwners, setTotalOwners] = useState(0);
   useEffect(() => {
     console.log(page);
-    axios
-      .get(`http://localhost:3000/api/owners?limit=7&page=${page + 1}`)
-      .then((response) => {
-        setOwners(response.data.data.owners);
-        // console.log(response.data.data.owners);
-        setTotalOwners(response.data.total);
-        setStart(response.data.start);
-      });
+    let url = `http://localhost:3000/api/owners?limit=7&page=${page + 1}`;
+    if (query.get("search")) {
+      url += `&search=${query.get("search")}`;
+    }
+    axios.get(url).then((response) => {
+      setOwners(response.data.data.owners);
+      // console.log(response.data.data.owners);
+      setTotalOwners(response.data.total);
+      setStart(response.data.start);
+    });
   }, [modal, page]);
 
   function handleViewModal(id) {
@@ -58,7 +67,7 @@ const Owner = () => {
         <div className="flex items-center justify-center">
           <span className="text-xl font-semibold">Owner</span>
         </div>
-        <div>
+        <div className="flex flex-row gap-4">
           <button
             className="px-2 py-1 bg-primary-color rounded flex items-center justify-center gap-1 hover:opacity-80"
             type="button"
@@ -69,6 +78,14 @@ const Owner = () => {
             <i className="bx bx-plus text-white"></i>
             <span className="text-white">Create</span>
           </button>
+          <Link
+            className="px-2 py-1 bg-success-color rounded flex items-center justify-center gap-1 hover:opacity-80"
+            type="button"
+            to={"/searchOwner"}
+          >
+            <i className="bx bx-search-alt-2 text-white"></i>
+            <span className="text-white">Search</span>
+          </Link>
         </div>
       </div>
       <div className="min-h-[450px]">

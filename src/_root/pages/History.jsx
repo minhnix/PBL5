@@ -2,8 +2,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 const History = () => {
+  let query = useQuery();
+
   let [history, setHistory] = useState([]);
 
   let [start, setStart] = useState(0);
@@ -15,14 +21,20 @@ const History = () => {
   let [totalHistory, setTotalHistory] = useState(0);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3000/api/history?limit=7&page=${page + 1}`)
-      .then((response) => {
-        setHistory(response.data.data.history);
-        console.log(response.data.data.history);
-        setTotalHistory(response.data.total);
-        setStart(response.data.start);
-      });
+    let url = `http://localhost:3000/api/history?limit=7&page=${page + 1}`;
+    if (query.get("search")) {
+      url += `&search=${query.get("search")}`;
+    }
+    if (query.get("searchDate")) {
+      url += `&searchDate=${query.get("searchDate")}`;
+    }
+    console.log(url);
+    axios.get(url).then((response) => {
+      setHistory(response.data.data.history);
+      console.log(response.data.data.history);
+      setTotalHistory(response.data.total);
+      setStart(response.data.start);
+    });
   }, [page]);
 
   function handleDate(dateTimeString) {
@@ -41,15 +53,16 @@ const History = () => {
         <div className="flex items-center justify-center">
           <span className="text-xl font-semibold">History</span>
         </div>
-        {/* <div>
-          <button
-            className="px-2 py-1 bg-primary-color rounded flex items-center justify-center gap-1 hover:opacity-80"
+        <div className="flex flex-row gap-4">
+          <Link
+            className="px-2 py-1 bg-success-color rounded flex items-center justify-center gap-1 hover:opacity-80"
             type="button"
+            to={"/searchHistory"}
           >
-            <i className="bx bx-plus text-white"></i>
-            <span className="text-white">Create</span>
-          </button>
-        </div> */}
+            <i className="bx bx-search-alt-2 text-white"></i>
+            <span className="text-white">Search</span>
+          </Link>
+        </div>
       </div>
       <div className="min-h-[450px]">
         <table className="w-full">

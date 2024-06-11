@@ -81,6 +81,17 @@ const LeftSidebar = () => {
           <i className="bx bx-history"></i>
           <span className="ml-2 text-[14px]">History</span>
         </Link>
+        {/* <Link
+          to={"/search"}
+          className={` m-1 px-6 py-[10px] flex flex-row items-center cursor-pointer rounded ${
+            location.pathname.split("/")[1] == "search"
+              ? "bg-[#e6f4ff] text-primary-color"
+              : "hover:bg-[#f0f0f0]"
+          } `}
+        >
+          <i className="bx bx-search-alt-2"></i>
+          <span className="ml-2 text-[14px]">Search</span>
+        </Link> */}
 
         <div
           onClick={handleLogOut}

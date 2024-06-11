@@ -3,8 +3,13 @@ import axios from "axios";
 import { DeleteVehicleModal, VehicleModal } from "../../components";
 import ReactPaginate from "react-paginate";
 import { Link, useParams } from "react-router-dom";
-
+import { useLocation } from "react-router-dom";
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 const Vehicle = () => {
+  let query = useQuery();
+
   const { id } = useParams();
   let [vehicles, setVehicles] = useState([]);
   let [start, setStart] = useState(0);
@@ -18,7 +23,11 @@ const Vehicle = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:3000/api/vehicles/user/${id}?limit=7&page=${page + 1}`)
+        .get(
+          `http://localhost:3000/api/vehicles/user/${id}?limit=7&page=${
+            page + 1
+          }`
+        )
         .then((response) => {
           setVehicles(response.data.data.vehicles);
           setTotalVehicles(response.data.total);
@@ -27,7 +36,11 @@ const Vehicle = () => {
         });
     } else {
       axios
-        .get(`http://localhost:3000/api/vehicles?limit=7&page=${page + 1}`)
+        .get(
+          `http://localhost:3000/api/vehicles?limit=7&page=${page + 1}${
+            query.get("search") && `&search=${query.get("search")}`
+          }`
+        )
         .then((response) => {
           setVehicles(response.data.data.vehicles);
           setTotalVehicles(response.data.total);
@@ -63,15 +76,25 @@ const Vehicle = () => {
         <div className="flex items-center justify-center">
           <span className="text-xl font-semibold">Vehicle</span>
         </div>
-        <div>
+        <div className="flex flex-row gap-4">
           <button
             className="px-2 py-1 bg-primary-color rounded flex items-center justify-center gap-1 hover:opacity-80"
             type="button"
-            onClick={handleCreateModal}
+            onClick={() => {
+              handleCreateModal();
+            }}
           >
             <i className="bx bx-plus text-white"></i>
             <span className="text-white">Create</span>
           </button>
+          <Link
+            className="px-2 py-1 bg-success-color rounded flex items-center justify-center gap-1 hover:opacity-80"
+            type="button"
+            to={"/searchVehicle"}
+          >
+            <i className="bx bx-search-alt-2 text-white"></i>
+            <span className="text-white">Search</span>
+          </Link>
         </div>
       </div>
       <div className="min-h-[450px]">

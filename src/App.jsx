@@ -6,6 +6,7 @@ import {
   Owner,
   Vehicle,
   History,
+  SearchOwner,
   UserLayout,
   UserAuthLayout,
 } from "./_root";
@@ -14,10 +15,11 @@ import {
   HistoryDetailUser,
   HistoryDetailVehicleUser,
   HomeUser,
+  SearchHistory,
+  SearchVehicle,
   UpdateInfor,
   VehicleUser,
   ViewHistory,
-  ViewHistoryDetailUser,
 } from "./_root/pages";
 import VehiclePending from "./_root/pages/VehiclePending";
 
@@ -54,6 +56,9 @@ const App = () => {
             <Route path="/vehicle/:id" element={<Vehicle />} />
             <Route path="/history/:id" element={<HistoryDetail />} />
             <Route path="/history" element={<History />} />
+            <Route path="/searchOwner" element={<SearchOwner />} />
+            <Route path="/searchVehicle" element={<SearchVehicle />} />
+            <Route path="/searchHistory" element={<SearchHistory />} />
             <Route path="/view-history/:id" element={<ViewHistory />} />
           </Route>
         </Routes>
