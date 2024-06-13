@@ -8,14 +8,15 @@ from .ImageService import ImageService
 class DetectService:
     def __init__(self, model_path = '.\model\detect_license_plate\\best.pt', reader_path = '.\model\ocr\\best.pt'):
         self.model_path = model_path
-        self.model = YOLO(model_path)
-        self.reader_model = YOLO(reader_path)
+        self.model = YOLO(model_path, verbose=False)
+        self.reader_model = YOLO(reader_path, verbose=False)
 
     def __call__(self, original_image):
         return self.detect(original_image)
     
     def detect(self, original_image): 
-        results = self.model(original_image, conf=0.5)
+        # gray_img = ImageService.to_gray_image(original_image)
+        results = self.model(original_image, conf=0.5, device="0")
         data = []
         for result in results:
             for box in result.boxes:
@@ -51,7 +52,7 @@ class DetectService:
         return images
     
     def read_license_plate(self, original_image): 
-        results = self.reader_model(original_image)
+        results = self.reader_model(original_image, device="0")
         for result in results:
             # print (result)
             return self.read_plate_from_result(result) # only 1 image in results

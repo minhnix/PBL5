@@ -5,10 +5,14 @@ from io import BytesIO
 import os
 import cv2
 import numpy as np
+from service.BeService import BeService
+from threading import Thread
+import time
 
 from service.DetectService import DetectService
 from service.ImageService import ImageService
 detect_model = DetectService()
+# import multi_vid as mv
 
 app = Flask(__name__)
 CORS(app)
@@ -60,5 +64,35 @@ def get_image(image_name):
     else:
         return 'Image not found', 404
 
+def webcam():
+    camera = cv2.VideoCapture(0)
+
+    while True:
+        success, frame = camera.read()
+        if success:
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        else:
+            camera.release()
+
+
+@app.route('/video')
+def webcam_display():
+    return Response(webcam(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route("/webhook", methods=["POST", "GET"])
+def update():
+    print("Update")
+    return "Vehicle list updated", 200
+
+
 if __name__ == '__main__':
+
+    # detection_thread = Thread(target=detect_car)
+    # detection_thread.daemon = True
+    # detection_thread.start()
+
+
     app.run(debug=True, port=5000)

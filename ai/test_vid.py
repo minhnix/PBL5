@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 # Địa chỉ IP của ESP32-CAM
-esp32_cam_ip = "192.168.171.251:81"
+esp32_cam_ip = "192.168.1.6:81"
 
 # URL để truy cập video từ ESP32-CAM
 video_url = f"http://{esp32_cam_ip}/stream"
