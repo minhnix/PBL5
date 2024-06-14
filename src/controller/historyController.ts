@@ -245,7 +245,7 @@ let historyController = {
     res: Response,
     next
   ) {
-    let limit = +req.query.limit || 15;
+    let limit = +req.query.limit || 200;
     let page = +req.query.page || 1;
     let offset = (page - 1) * limit;
     let filter = {};
