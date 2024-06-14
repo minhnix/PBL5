@@ -240,6 +240,56 @@ let historyController = {
       },
     });
   }),
+  getAllOwnerHistory: catchError(async function (
+    req: Request,
+    res: Response,
+    next
+  ) {
+    let limit = +req.query.limit || 15;
+    let page = +req.query.page || 1;
+    let offset = (page - 1) * limit;
+    let filter = {};
+    if (req.params.id) {
+      filter = {
+        vehicle: {
+          owner: {
+
+              id: req.params.id,
+            
+          },
+        },
+      };
+    }
+    let historyPromise = AppDataSource.getRepository(History).find({
+      where: filter,
+      relations: ["vehicle", "vehicle.owner"],
+      skip: offset,
+      take: limit,
+      order: {
+        createdAt: "DESC",
+      },
+    });
+    let totalPromise;
+    if (req.params.id) {
+      totalPromise = AppDataSource.getRepository(History)
+        .createQueryBuilder("e")
+        .leftJoin("e.vehicle", "vehicle")
+        .leftJoin("vehicle.owner", "owner")
+
+        .where("owner.id = :id", { id: req.params.id })
+        .getCount();
+    }
+    let [history, total] = await Promise.all([historyPromise, totalPromise]);
+    return res.status(200).json({
+      status: "success",
+      total: total,
+      start: offset,
+      results: history.length,
+      data: {
+        history,
+      },
+    });
+  }),
 
   getHistory: catchError(async function (req: Request, res: Response, next) {
     let history = await AppDataSource.getRepository(History).find({
