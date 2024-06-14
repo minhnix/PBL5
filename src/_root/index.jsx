@@ -12,6 +12,7 @@ import {
   SearchOwner,
   SearchVehicle,
   SearchHistory,
+  ViewStatistic,
 } from "./pages";
 export {
   RootLayout,
@@ -27,4 +28,5 @@ export {
   SearchOwner,
   SearchVehicle,
   SearchHistory,
+  ViewStatistic,
 };

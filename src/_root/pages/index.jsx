@@ -14,6 +14,7 @@ import SearchOwner from "./SearchOwner";
 import SearchVehicle from "./SearchVehicle";
 import SearchHistory from "./SearchHistory";
 import UpdateInfor from "./UpdateInfor";
+import ViewStatistic from "./ViewStatistic";
 export {
   Home,
   Owner,
@@ -31,4 +32,5 @@ export {
   SearchOwner,
   SearchVehicle,
   SearchHistory,
+  ViewStatistic,
 };

@@ -20,6 +20,7 @@ import {
   UpdateInfor,
   VehicleUser,
   ViewHistory,
+  ViewStatistic,
 } from "./_root/pages";
 import VehiclePending from "./_root/pages/VehiclePending";
 
@@ -60,6 +61,7 @@ const App = () => {
             <Route path="/searchVehicle" element={<SearchVehicle />} />
             <Route path="/searchHistory" element={<SearchHistory />} />
             <Route path="/view-history/:id" element={<ViewHistory />} />
+            <Route path="/statistic/:id" element={<ViewStatistic />} />
           </Route>
         </Routes>
       </main>

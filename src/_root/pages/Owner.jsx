@@ -163,6 +163,13 @@ const Owner = () => {
                         <i className="bx bxs-car text-[#529b82]"></i>
                         {/* <i className="bx bx-trash-alt text-[#ff4d4f]"></i> */}
                       </div>
+                      <Link
+                        to={`/statistic/${owner.id}`}
+                        className="rounded p-1 border border-[#854176] max-w-6 max-h-6 flex items-center justify-center mr-2 cursor-pointer hover:opacity-75"
+                      >
+                        <i className="bx bx-signal-5 text-[#854176]"></i>
+                        {/* <i className="bx bx-trash-alt text-[#ff4d4f]"></i> */}
+                      </Link>
                     </div>
                   </td>
                 </tr>
