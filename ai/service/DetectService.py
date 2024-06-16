@@ -16,7 +16,7 @@ class DetectService:
     
     def detect(self, original_image): 
         # gray_img = ImageService.to_gray_image(original_image)
-        results = self.model(original_image, conf=0.5, device="0")
+        results = self.model(original_image, conf=0.5, device="0", verbose=False)
         data = []
         for result in results:
             for box in result.boxes:
@@ -52,7 +52,7 @@ class DetectService:
         return images
     
     def read_license_plate(self, original_image): 
-        results = self.reader_model(original_image, device="0")
+        results = self.reader_model(original_image, device="0", verbose=False)
         for result in results:
             # print (result)
             return self.read_plate_from_result(result) # only 1 image in results

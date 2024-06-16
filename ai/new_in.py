@@ -21,16 +21,19 @@ app = Flask(__name__)
 plates = queue.Queue()
 car = False
 car_lock_time = 0
+num_of_detect_fail = 0
+
 is_open_door = False
 lock = threading.Lock()
 frame_queue = queue.Queue()
 video_queue = queue.Queue()
 be = BeService(base_api="http://localhost:3000/api")
-host = "192.168.133.251"
+host = "192.168.16.251"
 port = 5005
 
-ipServo = "http://192.168.133.10"
+ipServo = "http://192.168.16.10"
 url = ipServo + '/cc'
+url_fail = ipServo + '/fail'
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((host, port))
@@ -52,7 +55,7 @@ def read_frames(vid, frame_queue):
             success, frame = vid.read()
             if success:
                 video_queue.put(frame)
-                if (count % 5 == 0) and car:
+                if (count % 5 == 0):
                     frame_queue.put(frame)
             else:
                 break
@@ -60,18 +63,19 @@ def read_frames(vid, frame_queue):
             print("Error:", e)
 
 def read_socket(sock):
-    global car, car_lock_time
+    global car, car_lock_time, num_of_detect_fail
     while True:
         try:
             data = sock.recv(1024).decode("utf-8")
             print("Received data:", data)
             current_time = time.time()
             
-            if "Có xe tới" in data and not car and (current_time - car_lock_time >= 15) and not is_open_door:
+            if "Có xe tới" in data and not car and (current_time - car_lock_time >= 3) and not is_open_door:
                 with lock:
                     car = True
                     car_lock_time = current_time
-                
+                    num_of_detect_fail = 0
+
                     # time.sleep(5)
             # if is_open_door and (current_time - car_lock_time >= 15):
             #     data = {
@@ -97,16 +101,24 @@ def process_frames(frame_queue):
             'LCD': plate
         }
         try:
-            requests.post(url, data=data)
-            print(f"Mở cổng")
+            print(f"Mở cổng ")
+            requests.post(url, data=data, timeout=0.2)
         except Exception as e:
             print("Error:", e)
-
+    def sendIfDetectFail():
+        data = {
+            'fail1': 'FAIL',
+        }
+        try:
+            print(f"Fail 1")
+            requests.post(url_fail, data=data, timeout=0.2)
+        except Exception as e:
+            print("Error:", e)
     def sendHistory(frame, plate):
         _, img_encoded = cv2.imencode('.jpg', frame)
         img_bytes = img_encoded.tobytes()
         be.postHistory(file=img_bytes, data={'numberPlate': plate, 'typeStatus': 'in'})
-        print("Đã gửi lên server")
+        print(f"Đã gửi lên server {plate}")
         # plate = "PLATE_" + plate
         # sock.sendall(plate.encode("utf-8"))
         # print("Gửi xuống socket thành công")
@@ -121,12 +133,19 @@ def process_frames(frame_queue):
         # except Exception as e:
         #     print("Error:", e)
 
-    global car
+    global car, num_of_detect_fail
     while True:
         if not frame_queue.empty():
             frame = frame_queue.get()
             if car:
                 results = detect_model(frame)
+                vehicles = be.getAllVehicle()
+                plates = queue.Queue()
+                for v in vehicles:
+                    plates.put(v['numberPlate'])
+                    if '-' in v['numberPlate']:
+                        plates.put(v['numberPlate'].replace('-', ''))
+
                 for result in results:
                     cv2.rectangle(frame, (int(result['coordinates'][0]), int(result['coordinates'][1])),
                                   (int(result['coordinates'][2]), int(result['coordinates'][3])), color=(0, 0, 225), thickness=2)
@@ -135,13 +154,21 @@ def process_frames(frame_queue):
 
 
                     if result['number_license_plate'] in plates.queue:
+                        with lock:
+                            car = False
                         http_thread = threading.Thread(target=sendHistory, args=(frame, result['number_license_plate']))
                         door_thread = threading.Thread(target=sendOpenDoor, args=(result['number_license_plate'],))
                         http_thread.start()
                         door_thread.start()
-                        with lock:
-                            car = False
                         break
+                    else: 
+                        num_of_detect_fail += 1
+                        if num_of_detect_fail >= 15:
+                            fail_thread = threading.Thread(target=sendIfDetectFail)
+                            fail_thread.start()
+                            num_of_detect_fail = 0
+                            with lock:
+                                car = False
 
             new_frame_time = time.time()
             fps = 1/(new_frame_time-prev_frame_time)
@@ -204,4 +231,4 @@ if __name__ == '__main__':
     detection_thread = threading.Thread(target=start_detection)
     detection_thread.daemon = True
     detection_thread.start()
-    app.run(port=5000)
+    app.run(debug=True, port=5000)

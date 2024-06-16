@@ -7,7 +7,6 @@ class BeService:
         self.base_api = base_api
     
     def getAllVehicle(self):
-        print('${base_api}/vehicles?limit=1000')
         res = requests.get(self.base_api + '/vehicles?limit=1000')
         return res.json()['data']['vehicles']
     
